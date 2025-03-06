@@ -12,6 +12,7 @@ After the code is cloned from its repository, you can run it using *ng serve*.
 All the dependencies are referenced in package.json and downloaded automatically.
 ### 3.	Latest releases
 This is still in alpha and hasn't been deployed to production.
+
 ---
 
 As of this writing, the application is deployed in the Azure alpha environment:
