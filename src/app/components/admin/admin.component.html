@@ -1,0 +1,163 @@
+<main property="mainContentOfPage" class="container" resource="#wb-main" typeof="WebPageElement">
+  <h1 property="name">{{ 'ADMIN.TITLE' | translate }}</h1>
+
+  <div class="row">
+
+    <div class="col-md-10">
+
+      <h3>{{ 'ADMIN.SUBTITLE' | translate }}</h3>
+      <br />
+
+      <table datatable class="row-border hover small">
+        <thead>
+          <tr>
+            <th>{{ 'ADMIN.HEAD_DEPT_EN' | translate }}</th>
+            <th>{{ 'ADMIN.HEAD_DEPT_FR' | translate }}</th>
+            <th>{{ 'ADMIN.HEAD_ACRONYM_EN' | translate }}</th>
+            <th>{{ 'ADMIN.HEAD_ACRONYM_FR' | translate }}</th>
+            <th data-orderable="false">{{ 'ADMIN.HEAD_SEARCH_FR' | translate }}</th>
+            <th data-orderable="false">{{ 'ADMIN.HEAD_SEARCH_FR' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let department of departments">
+            <td><a
+                href="/{{currentTranslation}}/assessment?source={{department.acronymEn | lowercase}}&type={{ds.defaultSearchType(department)}}&lang=en">{{department.nameEn}}</a>
+            </td>
+            <td><a
+                href="/{{currentTranslation}}/assessment?source={{department.acronymEn | lowercase}}&type={{ds.defaultSearchType(department)}}&lang=en">{{department.nameFr}}</a>
+            </td>
+            <td class="center"><a
+                href="/{{currentTranslation}}/assessment?source={{department.acronymEn | lowercase}}&type={{ds.defaultSearchType(department)}}&lang=en">{{department.acronymEn}}</a>
+            </td>
+            <td class="center"><a
+                href="/{{currentTranslation}}/assessment?source={{department.acronymEn | lowercase}}&type={{ds.defaultSearchType(department)}}&lang=en">{{department.acronymFr}}</a>
+            </td>
+            <td><a href="{{department.urlEn}}">{{department.urlEn}}</a></td>
+            <td><a href="{{department.urlFr}}">{{department.urlFr}}</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <br />
+
+  <div class="row">
+
+    <div class="col-sm-7">
+
+      <h3 id="basic">{{ 'ADMIN.FORM_TITLE' | translate }}</h3>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <form [formGroup]="form" (ngSubmit)="submit()">
+            <div *ngIf="isSubmitted && isSuccess" class="alert alert-success">
+              <p>{{department.acronymEn}}/{{department.acronymFr}} {{ 'ADMIN.FORM_SUCCESS_MESSAGE' | translate }}</p>
+            </div>
+            <div *ngIf="isSubmitted && !isSuccess" class="alert alert-danger">
+              <p>{{ 'ADMIN.FORM_ERROR_MESSAGE' | translate }}</p>
+            </div>
+            <fieldset class="legend-brdr-bttm">
+              <legend>{{ 'GENERAL.DEPARTMENT' | translate }}</legend>
+              <div class="form-group">
+                <label for="nameEn" class="col-sm-6 control-label required">{{ 'ADMIN.FORM_NAME_EN' | translate
+                  }}</label>
+                <strong *ngIf="c['nameEn'].touched && c['nameEn'].invalid" class="error">
+                  <span *ngIf="c['nameEn'].errors?.['required']" class="label label-danger">
+                    {{ 'ADMIN.FORM_NAME_REQ' | translate }}
+                  </span>
+                  <span *ngIf="c['nameEn'].errors?.['minlength']" class="label label-danger">
+                    {{ 'ADMIN.FORM_10_CHAR_REQ' | translate }}
+                  </span>
+                </strong>
+                <div class="col-sm-5">
+                  <input type="text" class="form-control" id="nameEn" formControlName="nameEn" required="required" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="nameFr" class="col-sm-6 control-label required">{{ 'ADMIN.FORM_NAME_FR' | translate
+                  }}</label>
+                <strong *ngIf="c['nameFr'].touched && c['nameFr'].invalid" class="error">
+                  <span *ngIf="c['nameFr'].errors?.['required']" class="label label-danger">
+                    {{ 'ADMIN.FORM_NAME_REQ' | translate }}
+                  </span>
+                  <span *ngIf="c['nameFr'].errors?.['minlength']" class="label label-danger">
+                    {{ 'ADMIN.FORM_10_CHAR_REQ' | translate }}
+                  </span>
+                </strong>
+                <div class="col-sm-5">
+                  <input type="text" class="form-control" id="nameFr" formControlName="nameFr" required="required" />
+                </div>
+              </div>
+
+              <legend>{{ 'ADMIN.FORM_DEPT_ACRONYM' | translate }}</legend>
+              <div class="form-group">
+                <label for="acronymEn" class="col-sm-6 control-label required">{{ 'ADMIN.FORM_ACRONYM_EN' | translate
+                  }}</label>
+                <strong *ngIf="c['acronymEn'].touched && c['acronymEn'].invalid" class="error">
+                  <span *ngIf="c['acronymEn'].errors?.['required']" class="label label-danger">
+                    {{ 'ADMIN.FORM_ACRONYM_REQ' | translate }}
+                  </span>
+                  <span *ngIf="c['acronymEn'].errors?.['minlength']" class="label label-danger">
+                    {{ 'ADMIN.FORM_2_CHAR_REQ' | translate }}
+                  </span>
+                </strong>
+                <div class="col-sm-5">
+                  <input type="text" class="form-control" id="acronymEn" formControlName="acronymEn"
+                    required="required" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="acronymFr" class="col-sm-6 control-label required">{{ 'ADMIN.FORM_ACRONYM_FR' | translate
+                  }}</label>
+                <strong *ngIf="c['acronymFr'].touched && c['acronymFr'].invalid" class="error">
+                  <span *ngIf="c['acronymFr'].errors?.['required']" class="label label-danger">
+                    {{ 'ADMIN.FORM_ACRONYM_REQ' | translate }}
+                  </span>
+                  <span *ngIf="c['acronymFr'].errors?.['minlength']" class="label label-danger">
+                    {{ 'ADMIN.FORM_2_CHAR_REQ' | translate }}
+                  </span>
+                </strong>
+                <div class="col-sm-5">
+                  <input type="text" class="form-control" id="acronymFr" formControlName="acronymFr"
+                    required="required" />
+                </div>
+              </div>
+
+              <legend>{{ 'ADMIN.FORM_DEPT_SEARCH' | translate }}</legend>
+              <div class="form-group">
+                <label for="urlEn" class="col-sm-6 control-label">{{ 'ADMIN.FORM_SEARCH_EN' | translate }}</label>
+                <strong *ngIf="c['urlEn'].touched && c['urlEn'].invalid" class="error">
+                  <span class="label label-danger">
+                    {{ 'ADMIN.FORM_URL_ERROR' | translate }}
+                  </span>
+                </strong>
+                <div class="col-sm-5">
+                  <input type="text" class="form-control" id="urlEn" formControlName="urlEn" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="urlFr" class="col-sm-6 control-label">{{ 'ADMIN.FORM_SEARCH_FR' | translate }}</label>
+                <strong *ngIf="c['urlFr'].touched && c['urlFr'].invalid" class="error">
+                  <span class="label label-danger">
+                    {{ 'ADMIN.FORM_URL_ERROR' | translate }}
+                  </span>
+                </strong>
+                <div class="col-sm-5">
+                  <input type="text" class="form-control" id="urlFr" formControlName="urlFr" />
+                </div>
+              </div>
+            </fieldset>
+            <div class="form-group">
+              <div class="col-sm-offset-4 col-ms-8">
+                <button [disabled]="form.invalid" type="submit" class="btn btn-default">{{ 'ADMIN.FORM_ADD' | translate
+                  }}</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+
+</main>

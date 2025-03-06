@@ -1,0 +1,32 @@
+<h1 property="name">{{ 'GENERAL.TITLE' | translate }}</h1>
+
+<div class="row">
+
+  <div class="col-md-10">
+
+    <h3>{{ 'ADMIN.SUBTITLE' | translate }}</h3>
+    <br>
+
+    <table datatable class="row-border hover">
+      <thead>
+        <tr>
+          <th>{{ 'GENERAL.DEPARTMENT_AGENCY' | translate }}</th>
+          <th>{{ 'GENERAL.ACRONYM' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let department of departments">
+          <td><a
+              href="/{{currentTranslation}}/assessment?source={{department.acronymEn | lowercase}}&type={{ds.defaultSearchType(department)}}&lang=en">{{currentTranslation
+          == 'fr' ? department.nameFr : department.nameEn}}</a>
+          </td>
+          <td class="center"><a
+              href="/{{currentTranslation}}/assessment?source={{department.acronymEn | lowercase}}&type={{ds.defaultSearchType(department)}}&lang=en">{{currentTranslation
+          == 'fr' ? department.acronymFr : department.acronymEn}}</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<br>

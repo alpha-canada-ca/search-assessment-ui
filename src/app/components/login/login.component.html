@@ -1,0 +1,51 @@
+<h1 property="name">{{ 'LOGIN.TITLE' | translate }}</h1>
+
+<div class="row">
+
+    <div class="col-md-10">
+        <div>
+            <div class="panel-body">
+                <form [formGroup]="form" (ngSubmit)="submit()">
+                    <div *ngIf="isSubmitted && !isSuccess" class="alert alert-danger">
+                        <p>{{ 'LOGIN.FORM_ERROR_MESSAGE' | translate }}</p>
+                    </div>
+                    <fieldset class="legend-brdr-bttm">
+                        <div class="form-group">
+                            <label for="username" class="col-sm-2 control-label required">{{ 'LOGIN.FORM_USERNAME' |
+                                translate }}</label>
+                            <strong *ngIf="c['username'].touched && c['username'].invalid" class="error">
+                                <span *ngIf="c['username'].errors?.['required']" class="label label-danger">
+                                    {{ 'LOGIN.FORM_USERNAME_REQ' | translate }}
+                                </span>
+                            </strong>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="username" formControlName="username"
+                                    required="required" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="col-sm-2 control-label required">{{ 'LOGIN.FORM_PASSWORD' |
+                                translate }}</label>
+                            <strong *ngIf="c['password'].touched && c['password'].invalid" class="error">
+                                <span *ngIf="c['password'].errors?.['required']" class="label label-danger">
+                                    {{ 'LOGIN.FORM_PASSWORD_REQ' | translate }}
+                                </span>
+                            </strong>
+                            <div class="col-sm-9">
+                                <input type="password" class="form-control" id="password" formControlName="password"
+                                    required="required" />
+                            </div>
+                        </div>
+                    </fieldset>
+                    <br>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-ms-8">
+                            <button [disabled]="form.invalid || isSubmitted" type="submit" class="btn btn-default">{{
+                                'LOGIN.FORM_LOGIN' | translate }}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,175 @@
+em {
+    font-weight: bold;
+}
+
+.feedback-tool {
+    grid-template-columns: 0fr .7fr 3fr !important;
+    padding-bottom: 6px;
+    font-size: 16px;
+}
+
+.feedback-tool input,
+.feedback-tool select {
+    width: 35% !important;
+    margin-bottom: 3px;
+}
+
+.score {
+    border: solid black 1px;
+    border-radius: 6px;
+    padding: 1em 1em 0em 1em;
+    text-align: center;
+}
+
+.score h2 {
+    font-size: 20px;
+    margin-top: 6px;
+    padding-bottom: 0px;
+}
+
+.r-prcnt {
+    font-size: 42px;
+    font-weight: bold;
+}
+
+.sm-prcnt {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.pass {
+    background-color: #bee5b2;
+    padding: .5em;
+    border-radius: 6px;
+    color: #204A17;
+
+}
+
+.fail {
+    background-color: #e6aeae;
+    padding: .5em;
+    border-radius: 6px;
+    color: #561A1A;
+}
+
+.x-sm {
+    font-size: 75%;
+}
+
+.score .no-space {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.equal {
+    font-size: 46px;
+}
+
+.num {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 0px;
+}
+
+@media only screen and (min-width: 768px) {
+    .equal {
+        margin-top: 50%;
+        width: 50%;
+    }
+}
+
+.table .group-th th,
+.table tr .group {
+    background-color: #f5f5f5;
+    border-top: none;
+}
+
+
+.spacer {
+    border-right: 5px solid white;
+}
+
+.pass-pill {
+    background-color: #bee5b2;
+    border-radius: 5px;
+    color: #204A17;
+    text-align: center;
+    font-weight: bold;
+    padding: 4px 15px 4px 15px;
+}
+
+.fail-pill {
+    background-color: #e6aeae;
+    border-radius: 5px;
+    color: #561A1A;
+    text-align: center;
+    font-weight: bold;
+    padding: 4px 18px 4px 18px;
+    margin: 4px;
+}
+
+.partial-pill {
+    background-color: #f4e970;
+    border-radius: 5px;
+    color: #333;
+    text-align: center;
+    font-weight: bold;
+    padding: 4px;
+}
+
+.grey-pill {
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    color: #333;
+    padding: 4px 15px 4px 15px;
+    max-width: 96%;
+    min-height: 36px;
+}
+
+.grey-box {
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    color: #333;
+    min-height: 36px;
+}
+
+.table .brdr-none {
+    border-top: none;
+}
+
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
+    padding: 10px;
+    line-height: 1.4375;
+    vertical-align: top;
+}
+
+.bdr-right {
+    border-right: 1px solid #333;
+}
+
+.bdr-bottom {
+    border-bottom: 1px solid #333;
+}
+
+.brd-thick {
+    border-bottom: 2px solid #333;
+}
+
+.brd-top {
+    border-top: 1px solid #333;
+    padding-top: 12px;
+}
+
+.table .open td {
+    border-bottom: none !important;
+    border-top: none !important;
+}
+
+.open h2 {
+    border-bottom: 2px solid #333;
+}
