@@ -1,431 +1,501 @@
 <div *ngIf="analysisStatus.numAnalysis > 0" div class="alert alert-success small">
-	<span>{{ 'SCORE.GENERATING' | translate }}</span>
-	<span *ngIf="analysisStatus.toAnalyze.global.length > 0">
+    <span>{{ 'SCORE.GENERATING' | translate }}</span>
+    <span *ngIf="analysisStatus.toAnalyze.global.length > 0">
 		<h5>{{ 'SCORE.GLOBAL' | translate }}:</h5>
 		<span *ngFor="let g of analysisStatus.toAnalyze.global; let i = index">
-			{{g}} <span *ngIf="i+1 < analysisStatus.toAnalyze.global.length">|</span>
+			{{ g }} <span *ngIf="i+1 < analysisStatus.toAnalyze.global.length">|</span>
 		</span>
 	</span>
-	<span *ngIf="analysisStatus.toAnalyze.contextual != null && analysisStatus.toAnalyze.contextual.length > 0">
+    <span *ngIf="analysisStatus.toAnalyze.contextual != null && analysisStatus.toAnalyze.contextual.length > 0">
 		<h5>{{ 'SCORE.CONTEXTUAL' | translate }}:</h5>
 		<span *ngFor="let c of analysisStatus.toAnalyze.contextual; let i = index">
-			{{c}} <span *ngIf="i+1 < analysisStatus.toAnalyze.contextual.length">|</span>
+			{{ c }} <span *ngIf="i+1 < analysisStatus.toAnalyze.contextual.length">|</span>
 		</span>
 	</span>
-	<span *ngIf="analysisStatus.toAnalyze.google.length > 0">
+    <span *ngIf="analysisStatus.toAnalyze.google != null && analysisStatus.toAnalyze.google.length > 0">
 		<h5>{{ 'SCORE.GOOGLE' | translate }}:</h5>
 		<span *ngFor="let o of analysisStatus.toAnalyze.google; let i = index">
-			{{o}} <span *ngIf="i+1 < analysisStatus.toAnalyze.google.length">|</span>
+			{{ o }} <span *ngIf="i+1 < analysisStatus.toAnalyze.google.length">|</span>
 		</span>
 	</span>
 
 </div>
 
 
-
 <h1 property="name">{{ 'SCORE.TITLE' | translate }}</h1>
 
 <div class="col-lg-12">
-	<div class="feedback-tool">
-		<form>
-			<div class="form-group col-lg-12">
-				<label for="department" class="col-lg-3">{{ 'SCORE.DEPARTMENT' | translate }} </label>
-				<p class="col-lg-9">{{assessment.department.nameEn}} ({{assessment.department.acronymEn}})</p>
-			</div>
-			<div class="form-group col-lg-12">
-				<label for="language" class="col-lg-3">{{ 'SCORE.ASSESSMENT_LANG' | translate }} </label>
-				<select id="language-selector" class="form-control col-lg-9" #langSelector
-					(change)='onLangOptionsSelected(langSelector.value)'>
-					<option value="en" [selected]='assessment.lang == "en"'>{{ 'GENERAL.ENGLISH' | translate
-						}}
-					</option>
-					<option value="fr" [selected]='assessment.lang == "fr"'>{{ 'GENERAL.FRENCH' | translate
-						}}</option>
-				</select>
-			</div>
-		</form>
-		<form>
-			<div class="form-group col-lg-12">
-				<label for="pages" class="col-lg-3">{{ 'SCORE.ASSESSMENT_DATE' | translate }} </label>
-				<select id="date-selector" class="form-control col-lg-9" #dateSelector
-					(change)='onDateOptionsSelected(dateSelector.value)'>
-					<option value="{{date}}" *ngFor="let date of availableDates" [selected]='assessment.date == date'>
-						{{date}}</option>
-				</select>
-			</div>
-		</form>
-	</div>
+    <div class="feedback-tool">
+        <form>
+            <div class="form-group col-lg-12">
+                <label for="department" class="col-lg-3">{{ 'SCORE.DEPARTMENT' | translate }} </label>
+                <p class="col-lg-9">{{ assessment.department.nameEn }} ({{ assessment.department.acronymEn }})</p>
+            </div>
+            <div class="form-group col-lg-12">
+                <label for="language" class="col-lg-3">{{ 'SCORE.ASSESSMENT_LANG' | translate }} </label>
+                <select id="language-selector" class="form-control col-lg-9" #langSelector
+                        (change)='onLangOptionsSelected(langSelector.value)'>
+                    <option value="en" [selected]='assessment.lang == "en"'>{{
+                            'GENERAL.ENGLISH' | translate
+                        }}
+                    </option>
+                    <option value="fr" [selected]='assessment.lang == "fr"'>{{
+                            'GENERAL.FRENCH' | translate
+                        }}
+                    </option>
+                </select>
+            </div>
+        </form>
+        <form>
+            <div class="form-group col-lg-12">
+                <label for="pages" class="col-lg-3">{{ 'SCORE.ASSESSMENT_DATE' | translate }} </label>
+                <select id="date-selector" class="form-control col-lg-9" #dateSelector
+                        (change)='onDateOptionsSelected(dateSelector.value)'>
+                    <option value="{{date}}" *ngFor="let date of availableDates" [selected]='assessment.date == date'>
+                        {{ date }}
+                    </option>
+                </select>
+            </div>
+        </form>
+    </div>
 
-	<!--<div class="col-md-12 score">
-		<div class="col-md-3">
-			<div class="col-md-12">
-				<h2>{{ 'SCORE.OVERALL_SCORE' | translate }}</h2>
-				<p class="r-prcnt">{{successRate}}</p>
-				<p class="x-sm no-space">({{score}} {{ 'SCORE.PASS_OUT_OF' | translate }} {{evaluatedTerms.length}} {{
-					'SCORE.TOTAL' | translate }})</p>
-			</div>
-		</div>
-		<div class="col-md-1">
-			<p class="equal no-space ">=</p>
-		</div>
-		<div class="col-md-8">
-			<div class="col-md-6 mrgn-bttm-sm mrgn-tp-sm">
-				<div class="col-md-12 pass">
-					<h3 class="mrgn-tp-0 h4">{{ 'SCORE.NUM_PASS' | translate }}</h3>
-					<p class="num">{{score}}</p>
-				</div>
-			</div>
-			<div class="col-md-6 mrgn-bttm-sm mrgn-tp-sm">
-				<div class="col-md-12 fail">
-					<h3 class="mrgn-tp-0 h4">{{ 'SCORE.NUM_FAIL' | translate }}</h3>
-					<p class="num">{{evaluatedTerms.length - score}}</p>
-				</div>
-			</div>
-			<p class="x-sm no-space">{{ 'SCORE.PASS_MEANS' | translate }}</p>
-		</div>
-	</div>-->
+    <!--<div class="col-md-12 score">
+        <div class="col-md-3">
+            <div class="col-md-12">
+                <h2>{{ 'SCORE.OVERALL_SCORE' | translate }}</h2>
+                <p class="r-prcnt">{{successRate}}</p>
+                <p class="x-sm no-space">({{score}} {{ 'SCORE.PASS_OUT_OF' | translate }} {{evaluatedTerms.length}} {{
+                    'SCORE.TOTAL' | translate }})</p>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <p class="equal no-space ">=</p>
+        </div>
+        <div class="col-md-8">
+            <div class="col-md-6 mrgn-bttm-sm mrgn-tp-sm">
+                <div class="col-md-12 pass">
+                    <h3 class="mrgn-tp-0 h4">{{ 'SCORE.NUM_PASS' | translate }}</h3>
+                    <p class="num">{{score}}</p>
+                </div>
+            </div>
+            <div class="col-md-6 mrgn-bttm-sm mrgn-tp-sm">
+                <div class="col-md-12 fail">
+                    <h3 class="mrgn-tp-0 h4">{{ 'SCORE.NUM_FAIL' | translate }}</h3>
+                    <p class="num">{{evaluatedTerms.length - score}}</p>
+                </div>
+            </div>
+            <p class="x-sm no-space">{{ 'SCORE.PASS_MEANS' | translate }}</p>
+        </div>
+    </div>-->
 
-	<div class="col-md-1">
+    <div class="col-md-1">
 
-	</div>
+    </div>
 
-	<div *ngIf="assessment.hasContextual" class="col-md-12 grey-box text-center">
-		<div class="col-md-4">
-			<h4>{{ 'SCORE.CONTEXTUAL' | translate }}</h4>
-			<p class="sm-prcnt">{{assessment.contextualSuccessRate}}</p>
-			<p class="x-sm no-space">({{assessment.contextualScore}} {{ 'SCORE.PASS_OUT_OF' | translate }}
-				{{evaluatedTerms.length}} {{
-				'SCORE.TOTAL' | translate }})</p>
-		</div>
-		<div class="col-md-4">
-			<h4>{{ 'SCORE.GLOBAL' | translate }}</h4>
-			<p class="sm-prcnt">{{assessment.globalSuccessRate}}</p>
-			<p class="x-sm no-space">({{assessment.globalScore}} {{ 'SCORE.PASS_OUT_OF' | translate }}
-				{{evaluatedTerms.length}} {{
-				'SCORE.TOTAL' | translate }})</p>
-		</div>
-		<div class="col-md-4">
-			<h4>{{ 'SCORE.GOOGLE' | translate }}</h4>
-			<p class="sm-prcnt">{{assessment.googleSuccessRate}}</p>
-			<p class="x-sm no-space">({{assessment.googleScore}} {{ 'SCORE.PASS_OUT_OF' | translate }}
-				{{evaluatedTerms.length}} {{
-				'SCORE.TOTAL' | translate }})</p>
-		</div>
-	</div>
+    <div *ngIf="assessment.hasContextual && assessment.googleTerms" class="col-md-12 grey-box text-center">
+        <div class="col-md-4">
+            <h4>{{ 'SCORE.CONTEXTUAL' | translate }}</h4>
+            <p class="sm-prcnt">{{ assessment.contextualSuccessRate }}</p>
+            <p class="x-sm no-space">({{ assessment.contextualScore }} {{ 'SCORE.PASS_OUT_OF' | translate }}
+                {{ evaluatedTerms.length }} {{
+                    'SCORE.TOTAL' | translate
+                }})</p>
+        </div>
+        <div class="col-md-4">
+            <h4>{{ 'SCORE.GLOBAL' | translate }}</h4>
+            <p class="sm-prcnt">{{ assessment.globalSuccessRate }}</p>
+            <p class="x-sm no-space">({{ assessment.globalScore }} {{ 'SCORE.PASS_OUT_OF' | translate }}
+                {{ evaluatedTerms.length }} {{
+                    'SCORE.TOTAL' | translate
+                }})</p>
+        </div>
+        <div class="col-md-4">
+            <h4>{{ 'SCORE.GOOGLE' | translate }}</h4>
+            <p class="sm-prcnt">{{ assessment.googleSuccessRate }}</p>
+            <p class="x-sm no-space">({{ assessment.googleScore }} {{ 'SCORE.PASS_OUT_OF' | translate }}
+                {{ evaluatedTerms.length }} {{
+                    'SCORE.TOTAL' | translate
+                }})</p>
+        </div>
+    </div>
 
-	<div *ngIf="!assessment.hasContextual" class="col-md-12 grey-box text-center">
-		<div class="col-md-6">
-			<h4>{{ 'SCORE.GLOBAL' | translate }}</h4>
-			<p class="sm-prcnt">{{assessment.globalSuccessRate}}</p>
-			<p class="x-sm no-space">({{assessment.globalScore}} {{ 'SCORE.PASS_OUT_OF' | translate }}
-				{{evaluatedTerms.length}} {{
-				'SCORE.TOTAL' | translate }})</p>
-		</div>
-		<div class="col-md-6">
-			<h4>{{ 'SCORE.GOOGLE' | translate }}</h4>
-			<p class="sm-prcnt">{{assessment.googleSuccessRate}}</p>
-			<p class="x-sm no-space">({{assessment.googleScore}} {{ 'SCORE.PASS_OUT_OF' | translate }}
-				{{evaluatedTerms.length}} {{
-				'SCORE.TOTAL' | translate }})</p>
-		</div>
+    <div *ngIf="assessment.hasContextual && !assessment.googleTerms" class="col-md-12 grey-box text-center">
+        <div class="col-md-6">
+            <h4>{{ 'SCORE.CONTEXTUAL' | translate }}</h4>
+            <p class="sm-prcnt">{{ assessment.contextualSuccessRate }}</p>
+            <p class="x-sm no-space">({{ assessment.contextualScore }} {{ 'SCORE.PASS_OUT_OF' | translate }}
+                {{ evaluatedTerms.length }} {{
+                    'SCORE.TOTAL' | translate
+                }})</p>
+        </div>
+        <div class="col-md-6">
+            <h4>{{ 'SCORE.GLOBAL' | translate }}</h4>
+            <p class="sm-prcnt">{{ assessment.globalSuccessRate }}</p>
+            <p class="x-sm no-space">({{ assessment.globalScore }} {{ 'SCORE.PASS_OUT_OF' | translate }}
+                {{ evaluatedTerms.length }} {{
+                    'SCORE.TOTAL' | translate
+                }})</p>
+        </div>
+    </div>
 
-	</div>
+    <div *ngIf="!assessment.hasContextual && assessment.googleTerms" class="col-md-12 grey-box text-center">
+        <div class="col-md-6">
+            <h4>{{ 'SCORE.GLOBAL' | translate }}</h4>
+            <p class="sm-prcnt">{{ assessment.globalSuccessRate }}</p>
+            <p class="x-sm no-space">({{ assessment.globalScore }} {{ 'SCORE.PASS_OUT_OF' | translate }}
+                {{ evaluatedTerms.length }} {{
+                    'SCORE.TOTAL' | translate
+                }})</p>
+        </div>
+        <div class="col-md-6">
+            <h4>{{ 'SCORE.GOOGLE' | translate }}</h4>
+            <p class="sm-prcnt">{{ assessment.googleSuccessRate }}</p>
+            <p class="x-sm no-space">({{ assessment.googleScore }} {{ 'SCORE.PASS_OUT_OF' | translate }}
+                {{ evaluatedTerms.length }} {{
+                    'SCORE.TOTAL' | translate
+                }})</p>
+        </div>
 
+    </div>
 
-
-
-	<div class="col-md-10">
-	</div>
-	<div class="col-md-2 mrgn-tp-lg mrgn-bttm-lg">
-		<div class="text-center">
-			<a href="javascript:void(0);" (click)="downloadCsv()"><button type="button" class="btn btn-primary">
-					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-						class="bi bi-filetype-csv" viewBox="0 0 16 16">
-						<path fill-rule="evenodd"
-							d="M14 4.5V14a2 2 0 0 1-2 2h-1v-1h1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5zM3.517 14.841a1.13 1.13 0 0 0 .401.823c.13.108.289.192.478.252.19.061.411.091.665.091.338 0 .624-.053.859-.158.236-.105.416-.252.539-.44.125-.189.187-.408.187-.656 0-.224-.045-.41-.134-.56a1.001 1.001 0 0 0-.375-.357 2.027 2.027 0 0 0-.566-.21l-.621-.144a.97.97 0 0 1-.404-.176.37.37 0 0 1-.144-.299c0-.156.062-.284.185-.384.125-.101.296-.152.512-.152.143 0 .266.023.37.068a.624.624 0 0 1 .246.181.56.56 0 0 1 .12.258h.75a1.092 1.092 0 0 0-.2-.566 1.21 1.21 0 0 0-.5-.41 1.813 1.813 0 0 0-.78-.152c-.293 0-.551.05-.776.15-.225.099-.4.24-.527.421-.127.182-.19.395-.19.639 0 .201.04.376.122.524.082.149.2.27.352.367.152.095.332.167.539.213l.618.144c.207.049.361.113.463.193a.387.387 0 0 1 .152.326.505.505 0 0 1-.085.29.559.559 0 0 1-.255.193c-.111.047-.249.07-.413.07-.117 0-.223-.013-.32-.04a.838.838 0 0 1-.248-.115.578.578 0 0 1-.255-.384h-.765ZM.806 13.693c0-.248.034-.46.102-.633a.868.868 0 0 1 .302-.399.814.814 0 0 1 .475-.137c.15 0 .283.032.398.097a.7.7 0 0 1 .272.26.85.85 0 0 1 .12.381h.765v-.072a1.33 1.33 0 0 0-.466-.964 1.441 1.441 0 0 0-.489-.272 1.838 1.838 0 0 0-.606-.097c-.356 0-.66.074-.911.223-.25.148-.44.359-.572.632-.13.274-.196.6-.196.979v.498c0 .379.064.704.193.976.131.271.322.48.572.626.25.145.554.217.914.217.293 0 .554-.055.785-.164.23-.11.414-.26.55-.454a1.27 1.27 0 0 0 .226-.674v-.076h-.764a.799.799 0 0 1-.118.363.7.7 0 0 1-.272.25.874.874 0 0 1-.401.087.845.845 0 0 1-.478-.132.833.833 0 0 1-.299-.392 1.699 1.699 0 0 1-.102-.627v-.495Zm8.239 2.238h-.953l-1.338-3.999h.917l.896 3.138h.038l.888-3.138h.879l-1.327 4Z">
-						</path>
-					</svg>
-					{{ 'SCORE.DOWNLOAD' | translate }}
-				</button></a>
-		</div>
-	</div>
-
-
-
-
-	<table style="width: 100%" class="table small mrgn-tp-lg text-center">
-		<col>
-		<colgroup span="2"></colgroup>
-		<colgroup span="2"></colgroup>
-		<tr class="group-th">
-			<th class="brdr-none" rowspan="1"></th>
-			<th class="brdr-none" rowspan="1"></th>
-			<th class="text-center spacer" colspan="3" scope="colgroup">{{ 'SCORE.HEAD_SEARCH_RANKING' | translate }}
-			</th>
-			<th class="text-center" colspan="3" scope="colgroup">{{ 'SCORE.HEAD_META_TERMS' | translate }}</th>
-			<th class="brdr-none" rowspan="1"></th>
-		</tr>
-		<tr class="brd-thick">
-			<th class="text-center brdr-none" scope="col">{{ 'SCORE.HEAD_TERMS' | translate }}</th>
-			<th class="text-center brdr-none" scope="col">{{ 'SCORE.SCORE' | translate }}</th>
-			<th class="text-center group" scope="col">{{ 'SCORE.GOOGLE' | translate }}</th>
-			<th class="text-center group" scope="col">{{ 'SCORE.GLOBAL' | translate }}</th>
-			<th class="text-center group spacer" scope="col">{{ 'SCORE.CONTEXTUAL' | translate }}</th>
-			<th class="text-center group" scope="col">{{ 'SCORE.HEAD_TITLE' | translate }}</th>
-			<th class="text-center group" scope="col">{{ 'SCORE.HEAD_DESCRIPTION' | translate }}</th>
-			<th class="text-center group" scope="col">{{ 'SCORE.HEAD_KEYWORDS' | translate }}</th>
-			<th class="text-center brdr-none" style="width: 10%;" scope="col"></th>
-		</tr>
-		<ng-container *ngFor="let term of evaluatedTerms; let i = index">
-			<tr class="open">
-				<td class="bdr-right bdr-bottom">{{term.term}}</td>
-
-				<td *ngIf="term.isPass else elseIsPassBlock" class="bdr-right bdr-bottom">
-					<span class="pass-pill">{{ 'SCORE.PASS' | translate }}</span>
-				</td>
-				<ng-template #elseIsPassBlock>
-					<td class="bdr-right bdr-bottom"><span class="fail-pill">{{ 'SCORE.FAIL' | translate }}</span>
-					</td>
-				</ng-template>
-
-				<td class="bdr-right bdr-bottom">{{assessment.googleTerms[i].passingUrlPosition}}</td>
-				<td class="bdr-bottom">{{assessment.globalTerms[i].passingUrlPosition}}</td>
-
-				<ng-container *ngIf="assessment.hasContextual; else elsePosBlock">
-					<td class="bdr-bottom">{{assessment.contextualTerms[i].passingUrlPosition}}</td>
-				</ng-container>
-				<ng-template #elsePosBlock>
-					<td class="bdr-bottom">{{ 'SCORE.NA' | translate }}</td>
-				</ng-template>
-
-				<!-- Title -->
-				<ng-container
-					*ngIf="term.passingUrlMetadata.title.matches.matchingScore > 0; then thenTitleBlock; else elseTitleBlock"></ng-container>
-				<ng-template #thenTitleBlock>
-					<td *ngIf="term.passingUrlMetadata.title.matches.matchingScore == 2; else elseIfTitleBlock"
-						class="bdr-bottom"><span class="pass-pill">{{ 'SCORE.YES' | translate }}</span></td>
-					<ng-template #elseIfTitleBlock>
-						<td class="bdr-bottom"><span class="partial-pill">{{ 'SCORE.PARTIAL' | translate }}</span></td>
-					</ng-template>
-				</ng-template>
-				<ng-template #elseTitleBlock>
-					<td class="bdr-bottom"><span class="fail-pill">{{ 'SCORE.NO' | translate }}</span></td>
-				</ng-template>
-
-				<!-- Description -->
-				<ng-container
-					*ngIf="term.passingUrlMetadata.description.matches.matchingScore > 0; then thenDescBlock; else elseDescBlock"></ng-container>
-				<ng-template #thenDescBlock>
-					<td *ngIf="term.passingUrlMetadata.description.matches.matchingScore == 2; else elseIfDescBlock"
-						class="bdr-bottom"><span class="pass-pill">{{ 'SCORE.YES' | translate }}</span></td>
-					<ng-template #elseIfDescBlock>
-						<td class="bdr-bottom"><span class="partial-pill">{{ 'SCORE.PARTIAL' | translate }}</span></td>
-					</ng-template>
-				</ng-template>
-				<ng-template #elseDescBlock>
-					<td class="bdr-bottom"><span class="fail-pill">{{ 'SCORE.NO' | translate }}</span></td>
-				</ng-template>
-
-				<!-- Keywords -->
-				<ng-container
-					*ngIf="term.passingUrlMetadata.keywords.matches.matchingScore > 0; then thenKeyBlock; else elseKeyBlock"></ng-container>
-				<ng-template #thenKeyBlock>
-					<td *ngIf="term.passingUrlMetadata.keywords.matches.matchingScore == 2; else elseIfKeyBlock"
-						class="bdr-bottom"><span class="pass-pill">{{ 'SCORE.YES' | translate }}</span></td>
-					<ng-template #elseIfKeyBlock>
-						<td class="bdr-bottom"><span class="partial-pill">{{ 'SCORE.PARTIAL' | translate }}</span></td>
-					</ng-template>
-				</ng-template>
-				<ng-template #elseKeyBlock>
-					<td class="bdr-bottom"><span class="fail-pill">{{ 'SCORE.NO' | translate }}</span></td>
-				</ng-template>
-
-				<td class="bdr-bottom"><i (click)="clickEvent(i)">{{statuses[i] ? '-' : '+'}}</i></td>
-			</tr>
-
-			<tr class="open">
-				<td class="brdr-none" rowspan="1"></td>
-
-				<td id="detail-sa" [ngClass]="statuses[i] ? '' : 'wb-inv'" colspan="7"
-					style="text-align: left !important;">
-					<!-- example of what expands out -->
-					<h2 class="h4">{{ 'SCORE.HEAD_TARGET_URL' | translate }}</h2>
-					<p>
-						<a href="{{evaluatedTerms[i].passingUrl}}">{{evaluatedTerms[i].passingUrl}}</a>&nbsp;
-						<a
-							href="/{{currentTranslation}}/urlAssessment?source={{source}}&lang={{lang}}&url={{term.passingUrl}}">[{{
-							'URL.TITLE' | translate }}]</a>
-					</p>
-
-					<h2 class="h4">{{ 'SCORE.HEAD_ACTION_LIST' | translate }}</h2>
-
-					<ng-container
-						*ngIf="(unmatchedMetaTerms(term.passingUrlMetadata.title.matches).length + unmatchedMetaTerms(term.passingUrlMetadata.description.matches).length + unmatchedMetaTerms(term.passingUrlMetadata.keywords.matches).length) > 0; then thenActionBlock; else elseIfActionBlock">
-					</ng-container>
-
-					<ng-template #thenActionBlock>
-						<ng-container
-							*ngFor="let u of unmatchedMetaTerms(term.passingUrlMetadata.title.matches); let i = index">
-							<input type="checkbox">
-							<label class="fail-pill"> {{ 'SCORE.ACTION_ITEM1' | translate }}{{ 'SCORE.META_TITLE' |
-								translate }}{{ 'SCORE.ACTION_ITEM2' | translate }} <b>{{u}}</b> {{ 'SCORE.ACTION_ITEM3'
-								| translate }}</label><br>
-						</ng-container>
-
-						<ng-container
-							*ngFor="let u of unmatchedMetaTerms(term.passingUrlMetadata.description.matches); let x = index">
-							<input type="checkbox">
-							<label class="fail-pill"> {{ 'SCORE.ACTION_ITEM1' | translate }}{{ 'SCORE.META_DESCRIPTION'
-								| translate }}{{ 'SCORE.ACTION_ITEM2' | translate }} <b>{{u}}</b> {{
-								'SCORE.ACTION_ITEM3' | translate }}</label><br>
-						</ng-container>
-
-						<ng-container
-							*ngFor="let u of unmatchedMetaTerms(term.passingUrlMetadata.keywords.matches); let n = index">
-							<input type="checkbox">
-							<label class="fail-pill"> {{ 'SCORE.ACTION_ITEM1' | translate }}{{ 'SCORE.META_KEYWORDS' |
-								translate }}{{ 'SCORE.ACTION_ITEM2' | translate }} <b>{{u}}</b> {{ 'SCORE.ACTION_ITEM3'
-								| translate }}</label><br>
-						</ng-container>
-					</ng-template>
-					<ng-template #elseIfActionBlock>
-						<div *ngIf="term.isPass; else elseActionBlock" class="alert alert-success">
-							<p>{{ 'SCORE.NO_ACTION' | translate }}</p>
-						</div>
-						<ng-template #elseActionBlock>
-							<input type="checkbox">
-							<label class="fail-pill"> {{ 'SCORE.CHECK_OUTRANK' | translate }}</label><br>
-						</ng-template>
-					</ng-template>
+    <div *ngIf="!assessment.hasContextual && !assessment.googleTerms" class="col-md-12 grey-box text-center">
+        <div class="col-md-12">
+            <h4>{{ 'SCORE.GLOBAL' | translate }}</h4>
+            <p class="sm-prcnt">{{ assessment.globalSuccessRate }}</p>
+            <p class="x-sm no-space">({{ assessment.globalScore }} {{ 'SCORE.PASS_OUT_OF' | translate }}
+                {{ evaluatedTerms.length }} {{
+                    'SCORE.TOTAL' | translate
+                }})</p>
+        </div>
+    </div>
 
 
+    <div class="col-md-10">
+    </div>
+    <div class="col-md-2 mrgn-tp-lg mrgn-bttm-lg">
+        <div class="text-center">
+            <a href="javascript:void(0);" (click)="downloadCsv()">
+                <button type="button" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                         class="bi bi-filetype-csv" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M14 4.5V14a2 2 0 0 1-2 2h-1v-1h1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5zM3.517 14.841a1.13 1.13 0 0 0 .401.823c.13.108.289.192.478.252.19.061.411.091.665.091.338 0 .624-.053.859-.158.236-.105.416-.252.539-.44.125-.189.187-.408.187-.656 0-.224-.045-.41-.134-.56a1.001 1.001 0 0 0-.375-.357 2.027 2.027 0 0 0-.566-.21l-.621-.144a.97.97 0 0 1-.404-.176.37.37 0 0 1-.144-.299c0-.156.062-.284.185-.384.125-.101.296-.152.512-.152.143 0 .266.023.37.068a.624.624 0 0 1 .246.181.56.56 0 0 1 .12.258h.75a1.092 1.092 0 0 0-.2-.566 1.21 1.21 0 0 0-.5-.41 1.813 1.813 0 0 0-.78-.152c-.293 0-.551.05-.776.15-.225.099-.4.24-.527.421-.127.182-.19.395-.19.639 0 .201.04.376.122.524.082.149.2.27.352.367.152.095.332.167.539.213l.618.144c.207.049.361.113.463.193a.387.387 0 0 1 .152.326.505.505 0 0 1-.085.29.559.559 0 0 1-.255.193c-.111.047-.249.07-.413.07-.117 0-.223-.013-.32-.04a.838.838 0 0 1-.248-.115.578.578 0 0 1-.255-.384h-.765ZM.806 13.693c0-.248.034-.46.102-.633a.868.868 0 0 1 .302-.399.814.814 0 0 1 .475-.137c.15 0 .283.032.398.097a.7.7 0 0 1 .272.26.85.85 0 0 1 .12.381h.765v-.072a1.33 1.33 0 0 0-.466-.964 1.441 1.441 0 0 0-.489-.272 1.838 1.838 0 0 0-.606-.097c-.356 0-.66.074-.911.223-.25.148-.44.359-.572.632-.13.274-.196.6-.196.979v.498c0 .379.064.704.193.976.131.271.322.48.572.626.25.145.554.217.914.217.293 0 .554-.055.785-.164.23-.11.414-.26.55-.454a1.27 1.27 0 0 0 .226-.674v-.076h-.764a.799.799 0 0 1-.118.363.7.7 0 0 1-.272.25.874.874 0 0 1-.401.087.845.845 0 0 1-.478-.132.833.833 0 0 1-.299-.392 1.699 1.699 0 0 1-.102-.627v-.495Zm8.239 2.238h-.953l-1.338-3.999h.917l.896 3.138h.038l.888-3.138h.879l-1.327 4Z">
+                        </path>
+                    </svg>
+                    {{ 'SCORE.DOWNLOAD' | translate }}
+                </button>
+            </a>
+        </div>
+    </div>
 
 
-					<h2 class="h4">{{ 'SCORE.HEAD_META_TERMS' | translate }}</h2>
-					<section>
-						<div class="col-md-2">
-							<div class="row">
-								<p><b>{{ 'SCORE.META_TITLE' | translate }}</b></p>
-							</div>
-						</div>
-						<div class="col-md-8">
-							<div class="row">
-								<p class="grey-pill" innerHTML="{{term.passingUrlMetadata.title.highlightedText}}"></p>
-								<p>
-									<ng-container
-										*ngIf="term.passingUrlMetadata.title.matches.matchingScore == 2; else elseMetaTitleBlock">
-										<span class="text-success glyphicon glyphicon-ok-circle"></span> {{
-										'SCORE.FEEDBACK_TERM_EXISTS_TITLE' | translate }}:
-										<b>{{allMetaTerms(term.passingUrlMetadata.title.matches).join(', ')}}</b>
-									</ng-container>
-									<ng-template #elseMetaTitleBlock>
-										<span class="text-danger glyphicon glyphicon-remove-circle"></span> {{
-										'SCORE.FEEDBACK_TERM_DOESN_EXISTS' | translate }}:
-										<b>{{unmatchedMetaTerms(term.passingUrlMetadata.title.matches).join(', ')}}</b>
-									</ng-template>
-								</p>
-							</div>
-						</div>
-						<div class="col-md-2">
-							<div class="row">
-								<p><a
-										href="https://design.canada.ca/specifications/information-findability/metadata.html#m2">{{
-										'SCORE.TITLE_GUIDE' | translate }}</a></p>
-							</div>
-						</div>
-					</section>
-					<div class="clearfix"></div>
-					<section class="brd-top">
-						<div class="col-md-2">
-							<div class="row">
-								<p><b>{{ 'SCORE.META_DESCRIPTION' | translate }}</b></p>
-							</div>
-						</div>
-						<div class="col-md-8">
-							<div class="row">
-								<p class="grey-pill"
-									innerHTML="{{term.passingUrlMetadata.description.highlightedText}}"></p>
-								<p>
-									<ng-container
-										*ngIf="term.passingUrlMetadata.description.matches.matchingScore == 2; else elseMetaDescBlock">
-										<span class="text-success glyphicon glyphicon-ok-circle"></span> {{
-										'SCORE.FEEDBACK_TERM_EXISTS_DESC' | translate }}:
-										<b>{{allMetaTerms(term.passingUrlMetadata.description.matches).join(', ')}}</b>
-									</ng-container>
-									<ng-template #elseMetaDescBlock>
-										<span class="text-danger glyphicon glyphicon-remove-circle"></span> {{
-										'SCORE.FEEDBACK_TERM_DOESN_EXISTS' | translate }}:
-										<b>{{unmatchedMetaTerms(term.passingUrlMetadata.description.matches).join(',
-											')}}</b>
-									</ng-template>
-								</p>
-							</div>
-						</div>
-						<div class="col-md-2">
-							<div class="row">
-								<p><a
-										href="https://design.canada.ca/specifications/information-findability/metadata.html#m3">{{
-										'SCORE.DESCRIPTION_GUIDE' | translate }}</a></p>
-							</div>
-						</div>
-					</section>
-					<div class="clearfix"></div>
-					<section class="brd-top">
-						<div class="col-md-2">
-							<div class="row">
-								<p><b>{{ 'SCORE.META_KEYWORDS' | translate }}</b></p>
-							</div>
-						</div>
-						<div class="col-md-8">
-							<div class="row">
-								<p class="grey-pill" innerHTML="{{term.passingUrlMetadata.keywords.highlightedText}}">
-								</p>
-								<p>
-									<ng-container
-										*ngIf="term.passingUrlMetadata.keywords.matches.matchingScore == 2; else elseMetaKeyBlock">
-										<span class="text-success glyphicon glyphicon-ok-circle"></span> {{
-										'SCORE.FEEDBACK_TERM_EXISTS_KEYWORDS' | translate }}:
-										<b>{{allMetaTerms(term.passingUrlMetadata.keywords.matches).join(', ')}}</b>
-									</ng-container>
-									<ng-template #elseMetaKeyBlock>
-										<span class="text-danger glyphicon glyphicon-remove-circle"></span> {{
-										'SCORE.FEEDBACK_TERM_DOESN_EXISTS' | translate }}:
-										<b>{{unmatchedMetaTerms(term.passingUrlMetadata.keywords.matches).join(',
-											')}}</b>
-									</ng-template>
-								</p>
-							</div>
-						</div>
-						<div class="col-md-2">
-							<div class="row">
-								<p><a
-										href="https://design.canada.ca/specifications/information-findability/metadata.html#m4">{{
-										'SCORE.KEYWORDS_GUIDE' | translate }}</a></p>
-							</div>
-						</div>
-					</section>
-					<div class="clearfix"></div>
+    <table style="width: 100%" class="table small mrgn-tp-lg text-center">
+        <col>
+        <colgroup span="2"></colgroup>
+        <colgroup span="2"></colgroup>
+        <tr class="group-th">
+            <th class="brdr-none" rowspan="1"></th>
+            <th class="brdr-none" rowspan="1"></th>
+            <th class="text-center spacer" colspan="3" scope="colgroup">{{ 'SCORE.HEAD_SEARCH_RANKING' | translate }}
+            </th>
+            <th class="text-center" colspan="3" scope="colgroup">{{ 'SCORE.HEAD_META_TERMS' | translate }}</th>
+            <th class="brdr-none" rowspan="1"></th>
+        </tr>
+        <tr class="brd-thick">
+            <th class="text-center brdr-none" scope="col">{{ 'SCORE.HEAD_TERMS' | translate }}</th>
+            <th class="text-center brdr-none" scope="col">{{ 'SCORE.SCORE' | translate }}</th>
+            <th class="text-center group" scope="col">{{ 'SCORE.GOOGLE' | translate }}</th>
+            <th class="text-center group" scope="col">{{ 'SCORE.GLOBAL' | translate }}</th>
+            <th class="text-center group spacer" scope="col">{{ 'SCORE.CONTEXTUAL' | translate }}</th>
+            <th class="text-center group" scope="col">{{ 'SCORE.HEAD_TITLE' | translate }}</th>
+            <th class="text-center group" scope="col">{{ 'SCORE.HEAD_DESCRIPTION' | translate }}</th>
+            <th class="text-center group" scope="col">{{ 'SCORE.HEAD_KEYWORDS' | translate }}</th>
+            <th class="text-center brdr-none" style="width: 10%;" scope="col"></th>
+        </tr>
+        <ng-container *ngFor="let term of evaluatedTerms; let i = index">
+            <tr class="open">
+                <td class="bdr-right bdr-bottom">{{ term.term }}</td>
 
-					<h2 class="h4">{{ 'SCORE.WHAT_OUTRANK' | translate }}</h2>
-					<p><a href="{{assessment.googleUrl + '?q=' + assessment.googleTerms[i].term + '&lang=' + lang}}"
-							target="_blank" rel="noopener noreferrer">{{ 'SCORE.LINK_GOOGLE' | translate
-							}}</a>&nbsp;<span class="glyphicon glyphicon glyphicon-new-window"></span><br>
-						<a href="{{assessment.globalUrl + '?q=' + assessment.globalTerms[i].term + '&lang=' + lang}}"
-							target="_blank" rel="noopener noreferrer">{{ 'SCORE.LINK_CANADA' | translate }} {{
-							'SCORE.LINK_ALL_PAGES' | translate
-							}}</a>&nbsp;<span class="glyphicon glyphicon glyphicon-new-window"></span>
-						<ng-container *ngIf="assessment.hasContextual">
-							<br>
-							<a href="{{assessment.contextualUrl + '?q=' + assessment.contextualTerms[i].term + '&lang=' + lang}}"
-								target="_blank" rel="noopener noreferrer">{{ 'SCORE.LINK_CANADA' | translate }}
-								({{assessment.department.acronymEn}} {{
-								'SCORE.LINK_PAGE' | translate }})</a>&nbsp;<span
-								class="glyphicon glyphicon glyphicon-new-window"></span>
-						</ng-container>
-					</p>
-				</td>
-			</tr>
-			<td class="brdr-none"></td>
-		</ng-container>
-	</table>
+                <td *ngIf="term.isPass else elseIsPassBlock" class="bdr-right bdr-bottom">
+                    <span class="pass-pill">{{ 'SCORE.PASS' | translate }}</span>
+                </td>
+                <ng-template #elseIsPassBlock>
+                    <td class="bdr-right bdr-bottom"><span class="fail-pill">{{ 'SCORE.FAIL' | translate }}</span>
+                    </td>
+                </ng-template>
+
+                <ng-container *ngIf="assessment.googleTerms; else elseGooglePosBlock">
+                    <td class="bdr-bottom">{{ assessment.googleTerms[i].passingUrlPosition }}</td>
+                </ng-container>
+                <ng-template #elseGooglePosBlock>
+                    <td class="bdr-bottom">{{ 'SCORE.NA' | translate }}</td>
+                </ng-template>
+
+                <td class="bdr-bottom">{{ assessment.globalTerms[i].passingUrlPosition }}</td>
+
+                <ng-container *ngIf="assessment.hasContextual; else elsePosBlock">
+                    <td class="bdr-bottom">{{ assessment.contextualTerms[i].passingUrlPosition }}</td>
+                </ng-container>
+                <ng-template #elsePosBlock>
+                    <td class="bdr-bottom">{{ 'SCORE.NA' | translate }}</td>
+                </ng-template>
+
+                <!-- Title -->
+                <ng-container
+                        *ngIf="term.passingUrlMetadata.title.matches.matchingScore > 0; then thenTitleBlock; else elseTitleBlock"></ng-container>
+                <ng-template #thenTitleBlock>
+                    <td *ngIf="term.passingUrlMetadata.title.matches.matchingScore == 2; else elseIfTitleBlock"
+                        class="bdr-bottom"><span class="pass-pill">{{ 'SCORE.YES' | translate }}</span></td>
+                    <ng-template #elseIfTitleBlock>
+                        <td class="bdr-bottom"><span class="partial-pill">{{ 'SCORE.PARTIAL' | translate }}</span></td>
+                    </ng-template>
+                </ng-template>
+                <ng-template #elseTitleBlock>
+                    <td class="bdr-bottom"><span class="fail-pill">{{ 'SCORE.NO' | translate }}</span></td>
+                </ng-template>
+
+                <!-- Description -->
+                <ng-container
+                        *ngIf="term.passingUrlMetadata.description.matches.matchingScore > 0; then thenDescBlock; else elseDescBlock"></ng-container>
+                <ng-template #thenDescBlock>
+                    <td *ngIf="term.passingUrlMetadata.description.matches.matchingScore == 2; else elseIfDescBlock"
+                        class="bdr-bottom"><span class="pass-pill">{{ 'SCORE.YES' | translate }}</span></td>
+                    <ng-template #elseIfDescBlock>
+                        <td class="bdr-bottom"><span class="partial-pill">{{ 'SCORE.PARTIAL' | translate }}</span></td>
+                    </ng-template>
+                </ng-template>
+                <ng-template #elseDescBlock>
+                    <td class="bdr-bottom"><span class="fail-pill">{{ 'SCORE.NO' | translate }}</span></td>
+                </ng-template>
+
+                <!-- Keywords -->
+                <ng-container
+                        *ngIf="term.passingUrlMetadata.keywords.matches.matchingScore > 0; then thenKeyBlock; else elseKeyBlock"></ng-container>
+                <ng-template #thenKeyBlock>
+                    <td *ngIf="term.passingUrlMetadata.keywords.matches.matchingScore == 2; else elseIfKeyBlock"
+                        class="bdr-bottom"><span class="pass-pill">{{ 'SCORE.YES' | translate }}</span></td>
+                    <ng-template #elseIfKeyBlock>
+                        <td class="bdr-bottom"><span class="partial-pill">{{ 'SCORE.PARTIAL' | translate }}</span></td>
+                    </ng-template>
+                </ng-template>
+                <ng-template #elseKeyBlock>
+                    <td class="bdr-bottom"><span class="fail-pill">{{ 'SCORE.NO' | translate }}</span></td>
+                </ng-template>
+
+                <td class="bdr-bottom"><i (click)="clickEvent(i)">{{ statuses[i] ? '-' : '+' }}</i></td>
+            </tr>
+
+            <tr class="open">
+                <td class="brdr-none" rowspan="1"></td>
+
+                <td id="detail-sa" [ngClass]="statuses[i] ? '' : 'wb-inv'" colspan="7"
+                    style="text-align: left !important;">
+                    <!-- example of what expands out -->
+                    <h2 class="h4">{{ 'SCORE.HEAD_TARGET_URL' | translate }}</h2>
+                    <p>
+                        <a href="{{evaluatedTerms[i].passingUrl}}">{{ evaluatedTerms[i].passingUrl }}</a>&nbsp;
+                        <a
+                                href="/{{currentTranslation}}/urlAssessment?source={{source}}&lang={{lang}}&url={{term.passingUrl}}">[{{
+                                'URL.TITLE' | translate
+                            }}]</a>
+                    </p>
+
+                    <h2 class="h4">{{ 'SCORE.HEAD_ACTION_LIST' | translate }}</h2>
+
+                    <ng-container
+                            *ngIf="(unmatchedMetaTerms(term.passingUrlMetadata.title.matches).length + unmatchedMetaTerms(term.passingUrlMetadata.description.matches).length + unmatchedMetaTerms(term.passingUrlMetadata.keywords.matches).length) > 0; then thenActionBlock; else elseIfActionBlock">
+                    </ng-container>
+
+                    <ng-template #thenActionBlock>
+                        <ng-container
+                                *ngFor="let u of unmatchedMetaTerms(term.passingUrlMetadata.title.matches); let i = index">
+                            <input type="checkbox">
+                            <label class="fail-pill"> {{ 'SCORE.ACTION_ITEM1' | translate }}{{
+                                    'SCORE.META_TITLE' |
+                                        translate
+                                }}{{ 'SCORE.ACTION_ITEM2' | translate }} <b>{{ u }}</b> {{
+                                    'SCORE.ACTION_ITEM3'
+                                        | translate
+                                }}</label><br>
+                        </ng-container>
+
+                        <ng-container
+                                *ngFor="let u of unmatchedMetaTerms(term.passingUrlMetadata.description.matches); let x = index">
+                            <input type="checkbox">
+                            <label class="fail-pill"> {{ 'SCORE.ACTION_ITEM1' | translate }}{{
+                                    'SCORE.META_DESCRIPTION'
+                                        | translate
+                                }}{{ 'SCORE.ACTION_ITEM2' | translate }} <b>{{ u }}</b> {{
+                                    'SCORE.ACTION_ITEM3' | translate
+                                }}</label><br>
+                        </ng-container>
+
+                        <ng-container
+                                *ngFor="let u of unmatchedMetaTerms(term.passingUrlMetadata.keywords.matches); let n = index">
+                            <input type="checkbox">
+                            <label class="fail-pill"> {{ 'SCORE.ACTION_ITEM1' | translate }}{{
+                                    'SCORE.META_KEYWORDS' |
+                                        translate
+                                }}{{ 'SCORE.ACTION_ITEM2' | translate }} <b>{{ u }}</b> {{
+                                    'SCORE.ACTION_ITEM3'
+                                        | translate
+                                }}</label><br>
+                        </ng-container>
+                    </ng-template>
+                    <ng-template #elseIfActionBlock>
+                        <div *ngIf="term.isPass; else elseActionBlock" class="alert alert-success">
+                            <p>{{ 'SCORE.NO_ACTION' | translate }}</p>
+                        </div>
+                        <ng-template #elseActionBlock>
+                            <input type="checkbox">
+                            <label class="fail-pill"> {{ 'SCORE.CHECK_OUTRANK' | translate }}</label><br>
+                        </ng-template>
+                    </ng-template>
+
+
+                    <h2 class="h4">{{ 'SCORE.HEAD_META_TERMS' | translate }}</h2>
+                    <section>
+                        <div class="col-md-2">
+                            <div class="row">
+                                <p><b>{{ 'SCORE.META_TITLE' | translate }}</b></p>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row">
+                                <p class="grey-pill" innerHTML="{{term.passingUrlMetadata.title.highlightedText}}"></p>
+                                <p>
+                                    <ng-container
+                                            *ngIf="term.passingUrlMetadata.title.matches.matchingScore == 2; else elseMetaTitleBlock">
+                                        <span class="text-success glyphicon glyphicon-ok-circle"></span> {{
+                                            'SCORE.FEEDBACK_TERM_EXISTS_TITLE' | translate
+                                        }}:
+                                        <b>{{ allMetaTerms(term.passingUrlMetadata.title.matches).join(', ') }}</b>
+                                    </ng-container>
+                                    <ng-template #elseMetaTitleBlock>
+                                        <span class="text-danger glyphicon glyphicon-remove-circle"></span> {{
+                                            'SCORE.FEEDBACK_TERM_DOESN_EXISTS' | translate
+                                        }}:
+                                        <b>{{ unmatchedMetaTerms(term.passingUrlMetadata.title.matches).join(', ') }}</b>
+                                    </ng-template>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="row">
+                                <p><a
+                                        href="https://design.canada.ca/specifications/information-findability/metadata.html#m2">{{
+                                        'SCORE.TITLE_GUIDE' | translate
+                                    }}</a></p>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="clearfix"></div>
+                    <section class="brd-top">
+                        <div class="col-md-2">
+                            <div class="row">
+                                <p><b>{{ 'SCORE.META_DESCRIPTION' | translate }}</b></p>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row">
+                                <p class="grey-pill"
+                                   innerHTML="{{term.passingUrlMetadata.description.highlightedText}}"></p>
+                                <p>
+                                    <ng-container
+                                            *ngIf="term.passingUrlMetadata.description.matches.matchingScore == 2; else elseMetaDescBlock">
+                                        <span class="text-success glyphicon glyphicon-ok-circle"></span> {{
+                                            'SCORE.FEEDBACK_TERM_EXISTS_DESC' | translate
+                                        }}:
+                                        <b>{{ allMetaTerms(term.passingUrlMetadata.description.matches).join(', ') }}</b>
+                                    </ng-container>
+                                    <ng-template #elseMetaDescBlock>
+                                        <span class="text-danger glyphicon glyphicon-remove-circle"></span> {{
+                                            'SCORE.FEEDBACK_TERM_DOESN_EXISTS' | translate
+                                        }}:
+                                        <b>{{
+                                                unmatchedMetaTerms(term.passingUrlMetadata.description.matches).join(',
+                                                    ')
+                                            }}</b>
+                                    </ng-template>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="row">
+                                <p><a
+                                        href="https://design.canada.ca/specifications/information-findability/metadata.html#m3">{{
+                                        'SCORE.DESCRIPTION_GUIDE' | translate
+                                    }}</a></p>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="clearfix"></div>
+                    <section class="brd-top">
+                        <div class="col-md-2">
+                            <div class="row">
+                                <p><b>{{ 'SCORE.META_KEYWORDS' | translate }}</b></p>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row">
+                                <p class="grey-pill" innerHTML="{{term.passingUrlMetadata.keywords.highlightedText}}">
+                                </p>
+                                <p>
+                                    <ng-container
+                                            *ngIf="term.passingUrlMetadata.keywords.matches.matchingScore == 2; else elseMetaKeyBlock">
+                                        <span class="text-success glyphicon glyphicon-ok-circle"></span> {{
+                                            'SCORE.FEEDBACK_TERM_EXISTS_KEYWORDS' | translate
+                                        }}:
+                                        <b>{{ allMetaTerms(term.passingUrlMetadata.keywords.matches).join(', ') }}</b>
+                                    </ng-container>
+                                    <ng-template #elseMetaKeyBlock>
+                                        <span class="text-danger glyphicon glyphicon-remove-circle"></span> {{
+                                            'SCORE.FEEDBACK_TERM_DOESN_EXISTS' | translate
+                                        }}:
+                                        <b>{{
+                                                unmatchedMetaTerms(term.passingUrlMetadata.keywords.matches).join(',
+                                                    ')
+                                            }}</b>
+                                    </ng-template>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="row">
+                                <p><a
+                                        href="https://design.canada.ca/specifications/information-findability/metadata.html#m4">{{
+                                        'SCORE.KEYWORDS_GUIDE' | translate
+                                    }}</a></p>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="clearfix"></div>
+
+                    <h2 class="h4">{{ 'SCORE.WHAT_OUTRANK' | translate }}</h2>
+                    <p>
+                        <ng-container *ngIf="assessment.googleTerms">
+                            <a href="{{assessment.googleUrl + '?q=' + assessment.googleTerms[i].term + '&lang=' + lang}}"
+                               target="_blank" rel="noopener noreferrer">{{
+                                    'SCORE.LINK_GOOGLE' | translate
+                                }}</a>&nbsp;<span class="glyphicon glyphicon glyphicon-new-window"></span><br>
+                        </ng-container>
+                        <a href="{{assessment.globalUrl + '?q=' + assessment.globalTerms[i].term + '&lang=' + lang}}"
+                           target="_blank" rel="noopener noreferrer">{{ 'SCORE.LINK_CANADA' | translate }} {{
+                                'SCORE.LINK_ALL_PAGES' | translate
+                            }}</a>&nbsp;<span class="glyphicon glyphicon glyphicon-new-window"></span>
+                        <ng-container *ngIf="assessment.hasContextual">
+                            <br>
+                            <a href="{{assessment.contextualUrl + '?q=' + assessment.contextualTerms[i].term + '&lang=' + lang}}"
+                               target="_blank" rel="noopener noreferrer">{{ 'SCORE.LINK_CANADA' | translate }}
+                                ({{ assessment.department.acronymEn }} {{
+                                    'SCORE.LINK_PAGE' | translate
+                                }})</a>&nbsp;<span
+                                class="glyphicon glyphicon glyphicon-new-window"></span>
+                        </ng-container>
+                    </p>
+                </td>
+            </tr>
+            <td class="brdr-none"></td>
+        </ng-container>
+    </table>
 </div>

@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  //ANALYSIS_API_URL: 'https://search-assessment.azurewebsites.net',
-  ANALYSIS_API_URL: 'http://localhost:8080',
+  ANALYSIS_API_URL: 'https://search-assessment.azurewebsites.net',
+  //ANALYSIS_API_URL: 'http://localhost:8080',
 };
 
 /*
