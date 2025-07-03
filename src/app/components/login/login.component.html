@@ -6,9 +6,15 @@
         <div>
             <div class="panel-body">
                 <form [formGroup]="form" (ngSubmit)="submit()">
-                    <div *ngIf="isSubmitted && !isSuccess" class="alert alert-danger">
+                    <div *ngIf="isSubmitted && !isSuccess && !errorMessage else elseError" class="alert alert-danger">
                         <p>{{ 'LOGIN.FORM_ERROR_MESSAGE' | translate }}</p>
                     </div>
+                    <ng-template #elseError>
+                        <div *ngIf="errorMessage" class="alert alert-danger">
+                            <p>{{errorMessage}}</p>
+                        </div>
+                    </ng-template>
+
                     <fieldset class="legend-brdr-bttm">
                         <div class="form-group">
                             <label for="username" class="col-sm-2 control-label required">{{ 'LOGIN.FORM_USERNAME' |

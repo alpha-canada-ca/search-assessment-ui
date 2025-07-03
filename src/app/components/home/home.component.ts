@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { DataService } from 'src/app/data.service';
+import { DataService } from 'src/app/services/data.service';
 import { Department } from '../admin/admin.component';
 import { ActivatedRoute } from '@angular/router';
 

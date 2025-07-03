@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
-import { StorageService } from 'src/app/storage.service';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Injectable({
     providedIn: 'root'

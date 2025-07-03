@@ -1,11 +1,12 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { Department } from './components/admin/admin.component';
+import {Department, UserRequest} from '../components/admin/admin.component';
 
 const LAST_UPDATE_SERVICE = 'lastUpdate';
 const AVAILABLE_DATES_SERVICE = 'availableDates';
 const DEPARTMENTS_SERVICE = 'departments';
+const USERS_SERVICE = 'users';
 const ANALYZE_SERVICE = 'analyze';
 const GET_ASSESSMENT_SERVICE = 'assessment';
 const GET_URL_ASSESSMENT_SERVICE = 'urlAssessment';
@@ -63,21 +64,15 @@ export class DataService {
     return this.http.get(environment.ANALYSIS_API_URL + '/' + DEPARTMENTS_SERVICE);
   }
   addDepartment(department: Department) {
-    var params = new HttpParams()
-    .set('nameEn', department.nameEn)
-    .set('nameFr', department.nameFr)
-    .set('acronymEn', department.acronymEn)
-    .set('acronymFr', department.acronymFr);
+    return this.http.post(environment.ANALYSIS_API_URL + '/' + DEPARTMENTS_SERVICE, department);
+  }
 
-    if (department.urlEn) {
-      params = params.set('urlEn', department.urlEn);
-    }
+  getUsers() {
+    return this.http.get(environment.ANALYSIS_API_URL + '/' + USERS_SERVICE);
+  }
 
-    if (department.urlFr) {
-      params = params.set('urlFr', department.urlFr);
-    }
-
-    return this.http.post(environment.ANALYSIS_API_URL + '/' + DEPARTMENTS_SERVICE, null, { 'params': params });
+  addUser(user: UserRequest) {
+    return this.http.post(environment.ANALYSIS_API_URL + '/' + USERS_SERVICE, user);
   }
 
 
@@ -178,22 +173,8 @@ export class DataService {
 
   }
 
-  validateUser(username: string, password: string) {
-    var params = new HttpParams();
-
-    if (username) {
-      params = params.append('username', username);
-    }
-    if (password) {
-      params = params.append('password', password);
-    }
-
-    return this.http.get(environment.ANALYSIS_API_URL + '/' + USER_SERVICE, { 'params': params });
-
-  }
-
   defaultSearchType(department: Department) {
-    if (department.urlEn == null) {
+    if (department.searchUrlEn == null) {
       return "global";
     }
     return "contextual";

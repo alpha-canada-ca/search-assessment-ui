@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {DataService} from 'src/app/data.service';
+import {DataService} from 'src/app/services/data.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Title} from "@angular/platform-browser";
 import {Department} from 'src/app/components/admin/admin.component';
@@ -92,12 +92,13 @@ export class AssessmentComponent implements OnInit {
         googleUrl: '',
         type: '',
         department: {
+            id: 0,
             nameEn: '',
             nameFr: '',
             acronymEn: '',
             acronymFr: '',
-            urlEn: '',
-            urlFr: '',
+            searchUrlEn: '',
+            searchUrlFr: '',
         },
         lang: '',
         hasContextual: false,
