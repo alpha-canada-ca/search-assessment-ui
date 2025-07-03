@@ -3,9 +3,10 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-language',
-  templateUrl: './language.component.html',
-  styleUrls: ['./language.component.css']
+    selector: 'app-language',
+    templateUrl: './language.component.html',
+    styleUrls: ['./language.component.css'],
+    standalone: false
 })
 export class LanguageComponent implements OnInit {
   constructor(private activatedRoute : ActivatedRoute, private translate: TranslateService, private router: Router) {

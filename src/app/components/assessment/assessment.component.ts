@@ -72,7 +72,8 @@ export interface Evaluation {
     selector: 'app-score',
     templateUrl: './assessment.component.html',
     styleUrls: ['./assessment.component.css'],
-    providers: [DatePipe]
+    providers: [DatePipe],
+    standalone: false
 })
 
 export class AssessmentComponent implements OnInit {

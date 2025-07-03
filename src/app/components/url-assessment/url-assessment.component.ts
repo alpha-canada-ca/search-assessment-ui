@@ -28,10 +28,11 @@ export interface UrlAssessment {
 }
 
 @Component({
-  selector: 'app-score',
-  templateUrl: './url-assessment.component.html',
-  styleUrls: ['./url-assessment.component.css'],
-  providers: [DatePipe]
+    selector: 'app-score',
+    templateUrl: './url-assessment.component.html',
+    styleUrls: ['./url-assessment.component.css'],
+    providers: [DatePipe],
+    standalone: false
 })
 
 export class UrlAssessmentComponent implements OnInit {
