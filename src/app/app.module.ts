@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http'
+import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import {DataTablesModule} from 'angular-datatables';
 
 import {AppComponent} from './app.component';
@@ -24,8 +24,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     return new TranslateHttpLoader(httpClient);
 }
 
-@NgModule({
-    declarations: [
+@NgModule({ declarations: [
         AppComponent,
         AssessmentComponent,
         UrlAssessmentComponent,
@@ -36,10 +35,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
         LoginComponent,
         HomeComponent
     ],
-    imports: [
-        BrowserModule,
+    bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,
-        HttpClientModule,
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
@@ -51,14 +48,11 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
                 deps: [HttpClient]
             }
         }),
-        DataTablesModule
-    ],
-    providers: [
+        DataTablesModule], providers: [
         {
             provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true
         },
-    ],
-    bootstrap: [AppComponent]
-})
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule {
 }
