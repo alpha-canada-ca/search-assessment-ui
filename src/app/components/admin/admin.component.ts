@@ -4,9 +4,7 @@ import {Title} from "@angular/platform-browser";
 import {ActivatedRoute} from '@angular/router';
 import {LangChangeEvent, TranslateService} from '@ngx-translate/core';
 import {DataService} from 'src/app/services/data.service';
-import { DataTableDirective } from 'angular-datatables';
 import {Subject} from "rxjs";
-import {ADTSettings} from "angular-datatables/src/models/settings";
 
 const urlReg = '(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?';
 
@@ -47,19 +45,6 @@ export interface UserRequest {
 })
 export class AdminComponent implements OnInit {
 
-    @ViewChild('deptTable', { static: false })
-    deptTable!: DataTableDirective;
-    @ViewChild('userTable', { static: false })
-    userTable!: DataTableDirective;
-
-    dtOptions: ADTSettings = {
-        pagingType: 'full_numbers',
-        pageLength: 10,
-        processing: true,
-    };
-    dtDeptTrigger = new Subject<ADTSettings>();
-    dtUserTrigger = new Subject<ADTSettings>();
-
     departments: Department[];
     department!: Department;
     users: User[];
@@ -84,7 +69,7 @@ export class AdminComponent implements OnInit {
 
     userForm = new UntypedFormGroup({
         email: new UntypedFormControl('', [Validators.required, Validators.email]),
-        password: new UntypedFormControl('', [ Validators.required, Validators.minLength(8)]),
+        password: new UntypedFormControl('', [Validators.required, Validators.minLength(8)]),
         firstName: new UntypedFormControl('', [Validators.required, Validators.minLength(1)]),
         lastName: new UntypedFormControl('', [Validators.required, Validators.minLength(1)]),
         departmentId: new UntypedFormControl(null, [Validators.required]),
@@ -127,31 +112,12 @@ export class AdminComponent implements OnInit {
     private loadDept() {
         this.ds.getDepartments().subscribe((data: any) => {
             this.departments = data;
-            // Check if the DataTable is already initialized
-            if (this.deptTable && this.deptTable.dtInstance) {
-                this.deptTable.dtInstance.then((dtInstance: DataTables.Api) => {
-                    dtInstance.destroy(); // Destroy the old table
-                    this.dtDeptTrigger.next(this.dtOptions); // Trigger re-initialization
-                });
-            } else {
-                this.dtDeptTrigger.next(this.dtOptions); // Initial initialization
-            }
-
         });
     }
 
     private loadUsers() {
         this.ds.getUsers().subscribe((data: any) => {
             this.users = data;
-            // Check if the DataTable is already initialized
-            if (this.userTable && this.userTable.dtInstance) {
-                this.userTable.dtInstance.then((dtInstance: DataTables.Api) => {
-                    dtInstance.destroy(); // Destroy the old table
-                    this.dtUserTrigger.next(this.dtOptions); //npm install angular-datatables --save Trigger re-initialization
-                });
-            } else {
-                this.dtUserTrigger.next(this.dtOptions); // Initial initialization
-            }
         });
     }
 
