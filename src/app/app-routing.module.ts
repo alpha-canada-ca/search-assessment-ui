@@ -5,9 +5,11 @@ import {AssessmentComponent} from './components/assessment/assessment.component'
 import {UrlAssessmentComponent} from './components/url-assessment/url-assessment.component';
 import {AdminComponent} from './components/admin/admin.component';
 import {LoginComponent} from './components/login/login.component';
-import {AuthGuard} from './auth';
+import {AuthGuard} from './auth/auth.guard';
 import {LanguageComponent} from './components/language/language.component';
 import {HomeComponent} from './components/home/home.component';
+import {ListComponent} from "./components/list/list.component";
+import {AdminGuard} from "./auth/admin.guard";
 
 @NgModule({
     declarations: [],
@@ -27,7 +29,10 @@ import {HomeComponent} from './components/home/home.component';
                         path: 'home', component: HomeComponent
                     },
                     {
-                        path: 'admin', canActivate: [AuthGuard], component: AdminComponent
+                        path: 'list', canActivate: [AuthGuard], component: ListComponent
+                    },
+                    {
+                        path: 'admin', canActivate: [AuthGuard, AdminGuard], component: AdminComponent
                     },
                     {path: '**', redirectTo: 'home', pathMatch: 'full'}
                 ]

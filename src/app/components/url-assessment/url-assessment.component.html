@@ -5,60 +5,65 @@
 
 <div class="row col-md-10">
 	<br>
-	<div *ngIf="url && urlAssessment.isAssessmentRetrieved && urlAssessment.globalTerms.length < 1"
-		class="alert alert-warning small">
+    @if (url && (!urlAssessment.internalTerms || !urlAssessment.internalTerms.length)) {
+	<div class="alert alert-warning small">
 		<span>
 			<h5>{{ 'URL.NO_ASSESSMENT' | translate }}</h5>
 		</span>
 	</div>
+    }
 	<form [formGroup]="form" (ngSubmit)="submit()">
 		<fieldset>
 			<div class="input-group col-lg-10">
 				<label for="url" class="control-label required">{{ 'URL.FORM_URL' |
 					translate
 					}}</label>
-				<strong *ngIf="c['url'].touched && c['url'].invalid" class="error">
+                @if (c['url'].touched && c['url'].invalid) {
+				<strong class="error">
 					<span class="label label-danger">
 						{{ 'URL.FORM_URL_ERROR' | translate }}
 					</span>
 				</strong>
+                    }
 				<input type="text" class="form-control" id="url" formControlName="url" [ngModel]="url"
 					required="required" />
 			</div>
 			<div class="input-group col-lg-3">
-				<label for="lang" class="control-label required">{{
+				<label for="lang-selector" class="control-label required">{{
 					'URL.ASSESSMENT_LANG' | translate
 					}}</label>
-				<strong *ngIf="c['lang'].touched && c['lang'].invalid" class="error">
-					<span *ngIf="c['lang'].errors?.['required']" class="label label-danger">
+                @if (c['langId'].touched && c['langId'].invalid) {
+				<strong class="error">
+					<span *ngIf="c['langId'].errors?.['required']" class="label label-danger">
 						{{ 'GENERAL.ASSESSMENT_LANG' | translate }}
 					</span>
 				</strong>
-				<select id="source-selector" formControlName="lang" class="form-control" [ngModel]="lang"
+                }
+				<select id="lang-selector" formControlName="langId" class="form-control" [ngModel]="lang?.id"
 					required="required">
-					<option [value]="'en'" [selected]="!lang || lang.toLowerCase() === 'en'">
-						{{
-						'GENERAL.ENGLISH' | translate
-						}}</option>
-					<option [value]="'fr'" [selected]="lang && lang.toLowerCase() === 'fr'">
-						{{
-						'GENERAL.FRENCH' | translate
-						}}</option>
+                    <option value="{{eng?.id}}" [selected]='lang?.id == eng?.id'>{{
+                            'GENERAL.ENGLISH' | translate
+                        }}
+                    </option>
+                    <option value="{{fra?.id}}" [selected]='lang?.id == fra?.id'>{{
+                            'GENERAL.FRENCH' | translate
+                        }}
+                    </option>
 				</select>
 			</div>
 			<div class="input-group col-lg-3">
-				<label for="source" class="control-label required">{{
+				<label for="department-selector" class="control-label required">{{
 					'GENERAL.DEPARTMENT' | translate
 					}}</label>
-				<strong *ngIf="c['source'].touched && c['source'].invalid" class="error">
-					<span *ngIf="c['source'].errors?.['required']" class="label label-danger">
+				<strong *ngIf="c['deptId'].touched && c['deptId'].invalid" class="error">
+					<span *ngIf="c['deptId'].errors?.['required']" class="label label-danger">
 						{{ 'GENERAL.DEPARTMENT' | translate }}
 					</span>
 				</strong>
-				<select id="source-selector" formControlName="source" class="form-control" [ngModel]="source"
+				<select id="department-selector" formControlName="deptId" class="form-control" [ngModel]="dept?.id"
 					required="required">
-					<option *ngFor="let department of departments" [value]="department.acronymEn.toLowerCase()"
-						[selected]="urlAssessment.isAssessmentRetrieved && (source.toLowerCase() === department.acronymEn.toLowerCase())">
+					<option *ngFor="let department of departments" [value]="department.id"
+						[selected]="(dept?.id == department.id)">
 						{{department.acronymEn}}</option>
 				</select>
 			</div>
@@ -70,7 +75,8 @@
 	</form>
 </div>
 <br>
-<div *ngIf="urlAssessment.isAssessmentRetrieved && urlAssessment.globalTerms.length > 1">
+@if(urlAssessment.internalTerms) {
+<div>
 	<div class="col-md-10">
 
 		<h2>{{ 'SCORE.GLOBAL' | translate }}</h2>
@@ -81,94 +87,91 @@
 
 		<div class="well well-sm">
 			<p class="h5 text-center">{{ 'SCORE.SCORE' | translate }}</p>
-			<p class="text-center small">{{urlAssessment.globalSuccessRate}}</p>
-			<p class="text-center"><meter value="{{urlAssessment.globalScore > 0 ? urlAssessment.globalScore : 1}}"
-					min="0" max="100">{{urlAssessment.globalScore > 0 ? urlAssessment.globalScore : 1}}</meter></p>
+			<p class="text-center small">{{urlAssessment.internalScore}}</p>
+			<p class="text-center"><meter value="{{urlAssessment.internalPasses > 0 ? urlAssessment.internalPasses : 1}}"
+					min="0" max="100">{{urlAssessment.internalPasses > 0 ? urlAssessment.internalPasses : 1}}</meter></p>
 		</div>
 
 
 	</div>
 
 
-	<table class="wb-tables table table-striped table-hover" data-wb-tables='{ "ordering" : true }'>
+	<table class="table table-striped table-hover row-border hover small">
 		<thead class="small">
 			<tr>
 				<th class="col-sm-1 text-center">{{ 'SCORE.HEAD_TERMS' | translate }}</th>
-				<th class="col-sm-1 text-center">{{ 'SCORE.ASSESSMENT_DATE' | translate }}</th>
 				<th class="col-sm-1 text-center">{{ 'SCORE.HEAD_RESULT' | translate }}</th>
 				<th class="col-sm-1 text-center" data-orderable="false">{{ 'SCORE.HEAD_TITLE' | translate }}</th>
 				<th class="col-sm-3 text-center" data-orderable="false">{{ 'SCORE.HEAD_DESCRIPTION' | translate }}
 				</th>
-				<th class="col-sm-2 text-center" data-orderable="false">{{ 'SCORE.HEAD_KEYWORDS' | translate }}</th>
+				<th class="col-sm-2 text-center" data-orderable="false">{{ 'SCORE.HEAD_H1' | translate }}</th>
 				<th class="col-sm-1 text-center">{{ 'SCORE.HEAD_LAST_UPDATE' | translate }}</th>
 				<th class="col-sm-1 text-center" data-orderable="false">{{ 'SCORE.HEAD_POSITION' | translate }}</th>
 			</tr>
 		</thead>
 		<tbody class="small">
-			<tr *ngFor="let term of urlAssessment.globalTerms; let i = index">
+			<tr *ngFor="let term of urlAssessment.internalTerms; let i = index">
 
-				<td data-label="Search Terms">{{term.term}}</td>
+				<td data-label="Search terms">{{term.term}}</td>
 
-				<td data-label="Assessment Date"><small>{{term.date}}</small></td>
-
-				<td *ngIf="term.isPass; else elseBlock" data-label="Result" class="bg-success text-center">{{
+				<td *ngIf="term.pass; else elseBlock" data-label="Result" class="bg-success text-center">{{
 					'SCORE.PASS' | translate }}</td>
 				<ng-template #elseBlock>
 					<td data-label="Result" class="bg-danger text-center">{{ 'SCORE.FAIL' | translate }}</td>
 				</ng-template>
 
 				<ng-container
-					*ngIf="term.passingUrlMetadata.title.matches.matchingScore > 0; then thenBlock2; else elseBlock2"></ng-container>
+					*ngIf="urlAssessment.highlightedMetadata[i].title.matches.matchingScore > 0; then thenBlock2; else elseBlock2"></ng-container>
 				<ng-template #thenBlock2>
-					<td *ngIf="term.passingUrlMetadata.title.matches.matchingScore == 2; else elseIfBlock2"
+					<td *ngIf="urlAssessment.highlightedMetadata[i].title.matches.matchingScore == 2; else elseIfBlock2"
 						data-label="Title" class="bg-success text-center small"
-						innerHTML="{{term.passingUrlMetadata.title.highlightedText}}"></td>
+						innerHTML="{{urlAssessment.highlightedMetadata[i].title.highlightedText}}"></td>
 					<ng-template #elseIfBlock2>
 						<td data-label="Title" class="bg-warning text-center small"
-							innerHTML="{{term.passingUrlMetadata.title.highlightedText}}"></td>
+							innerHTML="{{urlAssessment.highlightedMetadata[i].title.highlightedText}}"></td>
 					</ng-template>
 				</ng-template>
 				<ng-template #elseBlock2>
 					<td data-label="Title" class="bg-danger text-center small"
-						innerHTML="{{term.passingUrlMetadata.title.highlightedText}}"></td>
+						innerHTML="{{urlAssessment.highlightedMetadata[i].title.highlightedText}}"></td>
 				</ng-template>
 
 				<ng-container
-					*ngIf="term.passingUrlMetadata.description.matches.matchingScore > 0; then thenBlock3; else elseBlock3"></ng-container>
+					*ngIf="urlAssessment.highlightedMetadata[i].description.matches.matchingScore > 0; then thenBlock3; else elseBlock3"></ng-container>
 				<ng-template #thenBlock3>
-					<td *ngIf="term.passingUrlMetadata.description.matches.matchingScore == 2; else elseIfBlock3"
+					<td *ngIf="urlAssessment.highlightedMetadata[i].description.matches.matchingScore == 2; else elseIfBlock3"
 						data-label="Description" class="bg-success text-center small"
-						innerHTML="{{term.passingUrlMetadata.description.highlightedText}}"></td>
+						innerHTML="{{urlAssessment.highlightedMetadata[i].description.highlightedText}}"></td>
 					<ng-template #elseIfBlock3>
 						<td data-label="Description" class="bg-warning text-center small"
-							innerHTML="{{term.passingUrlMetadata.description.highlightedText}}"></td>
+							innerHTML="{{urlAssessment.highlightedMetadata[i].description.highlightedText}}"></td>
 					</ng-template>
 				</ng-template>
 				<ng-template #elseBlock3>
 					<td data-label="Description" class="bg-danger text-center small"
-						innerHTML="{{term.passingUrlMetadata.description.highlightedText}}"></td>
+						innerHTML="{{urlAssessment.highlightedMetadata[i].description.highlightedText}}"></td>
 				</ng-template>
 
 				<ng-container
-					*ngIf="term.passingUrlMetadata.keywords.matches.matchingScore > 0; then thenBlock4; else elseBlock4"></ng-container>
+					*ngIf="urlAssessment.highlightedMetadata[i].h1.matches.matchingScore > 0; then thenBlock4; else elseBlock4"></ng-container>
 				<ng-template #thenBlock4>
-					<td *ngIf="term.passingUrlMetadata.keywords.matches.matchingScore == 2; else elseIfBlock4"
-						data-label="Keywords" class="bg-success text-center small"
-						innerHTML="{{term.passingUrlMetadata.keywords.highlightedText}}"></td>
+					<td *ngIf="urlAssessment.highlightedMetadata[i].h1.matches.matchingScore == 2; else elseIfBlock4"
+						data-label="h1" class="bg-success text-center small"
+						innerHTML="{{urlAssessment.highlightedMetadata[i].h1.highlightedText}}"></td>
 					<ng-template #elseIfBlock4>
-						<td data-label="Keywords" class="bg-warning text-center small"
-							innerHTML="{{term.passingUrlMetadata.keywords.highlightedText}}"></td>
+						<td data-label="h1" class="bg-warning text-center small"
+							innerHTML="{{urlAssessment.highlightedMetadata[i].h1.highlightedText}}"></td>
 					</ng-template>
 				</ng-template>
 				<ng-template #elseBlock4>
-					<td data-label="Keywords" class="bg-danger text-center small"
-						innerHTML="{{term.passingUrlMetadata.keywords.highlightedText}}"></td>
+					<td data-label="h1" class="bg-danger text-center small"
+						innerHTML="{{urlAssessment.highlightedMetadata[i].h1.highlightedText}}"></td>
 				</ng-template>
 
-				<td data-label="Last Update"><small>{{term.passingUrlMetadata.lastUpdate}}</small></td>
+				<td data-label="Last Update"><small>{{urlAssessment.highlightedMetadata[i].lastUpdate.text}}</small></td>
 
-				<td *ngIf="term.passingUrlPosition > 0; else elseBlock5" data-label="Possition" class="text-center">
-					{{term.passingUrlPosition}}</td>
+				<td *ngIf="term.position > 0; else elseBlock5" data-label="Possition" class="text-center">
+					{{term.position}}</td>
 				<ng-template #elseBlock5>
 					<td data-label="Possition" class="text-center"></td>
 				</ng-template>
@@ -185,16 +188,16 @@
 
 		<div class="well well-sm">
 			<p class="h5 text-center">{{ 'SCORE.SCORE' | translate }}</p>
-			<p class="text-center small">{{urlAssessment.googleSuccessRate}}</p>
-			<p class="text-center"><meter value="{{urlAssessment.googleScore > 0 ? urlAssessment.googleScore : 1}}"
-					min="0" max="100">{{urlAssessment.googleScore > 0 ? urlAssessment.googleScore : 1}}</meter></p>
+			<p class="text-center small">{{urlAssessment.googleScore}}</p>
+			<p class="text-center"><meter value="{{urlAssessment.googlePasses > 0 ? urlAssessment.googlePasses : 1}}"
+					min="0" max="100">{{urlAssessment.googlePasses > 0 ? urlAssessment.googlePasses : 1}}</meter></p>
 		</div>
 
 
 	</div>
 
 
-	<table class="wb-tables table table-hover">
+	<table class="table table-striped table-hover row-border hover small">
 		<thead class="small">
 			<tr>
 				<th class="col-sm-1 text-center">{{ 'SCORE.HEAD_TERMS' | translate }}</th>
@@ -203,7 +206,7 @@
 				<th class="col-sm-1 text-center" data-orderable="false">{{ 'SCORE.HEAD_TITLE' | translate }}</th>
 				<th class="col-sm-3 text-center" data-orderable="false">{{ 'SCORE.HEAD_DESCRIPTION' | translate }}
 				</th>
-				<th class="col-sm-2 text-center" data-orderable="false">{{ 'SCORE.HEAD_KEYWORDS' | translate }}</th>
+				<th class="col-sm-2 text-center" data-orderable="false">{{ 'SCORE.HEAD_H1' | translate }}</th>
 				<th class="col-sm-1 text-center">{{ 'SCORE.HEAD_LAST_UPDATE' | translate }}</th>
 				<th class="col-sm-1 text-center" data-orderable="false">{{ 'SCORE.HEAD_POSITION' | translate }}</th>
 			</tr>
@@ -213,66 +216,66 @@
 
 				<td data-label="Search Terms">{{term.term}}</td>
 
-				<td data-label="Assessment Date"><small>{{term.date}}</small></td>
+				<td data-label="Assessment name"><small>{{term.id}}</small></td>
 
-				<td *ngIf="term.isPass; else elseBlock" data-label="Result" class="bg-success text-center">{{
+				<td *ngIf="term.pass; else elseBlock" data-label="Result" class="bg-success text-center">{{
 					'SCORE.PASS' | translate }}</td>
 				<ng-template #elseBlock>
 					<td data-label="Result" class="bg-danger text-center">{{ 'SCORE.FAIL' | translate }}</td>
 				</ng-template>
 
 				<ng-container
-					*ngIf="term.passingUrlMetadata.title.matches.matchingScore > 0; then thenBlock2; else elseBlock2"></ng-container>
+					*ngIf="urlAssessment.highlightedMetadata[i].title.matches.matchingScore > 0; then thenBlock2; else elseBlock2"></ng-container>
 				<ng-template #thenBlock2>
-					<td *ngIf="term.passingUrlMetadata.title.matches.matchingScore == 2; else elseIfBlock2"
+					<td *ngIf="urlAssessment.highlightedMetadata[i].title.matches.matchingScore == 2; else elseIfBlock2"
 						data-label="Title" class="bg-success text-center small"
-						innerHTML="{{term.passingUrlMetadata.title.highlightedText}}"></td>
+						innerHTML="{{urlAssessment.highlightedMetadata[i].title.highlightedText}}"></td>
 					<ng-template #elseIfBlock2>
 						<td data-label="Title" class="bg-warning text-center small"
-							innerHTML="{{term.passingUrlMetadata.title.highlightedText}}"></td>
+							innerHTML="{{urlAssessment.highlightedMetadata[i].title.highlightedText}}"></td>
 					</ng-template>
 				</ng-template>
 				<ng-template #elseBlock2>
 					<td data-label="Title" class="bg-danger text-center small"
-						innerHTML="{{term.passingUrlMetadata.title.highlightedText}}"></td>
+						innerHTML="{{urlAssessment.highlightedMetadata[i].title.highlightedText}}"></td>
 				</ng-template>
 
 				<ng-container
-					*ngIf="term.passingUrlMetadata.description.matches.matchingScore > 0; then thenBlock3; else elseBlock3"></ng-container>
+					*ngIf="urlAssessment.highlightedMetadata[i].description.matches.matchingScore > 0; then thenBlock3; else elseBlock3"></ng-container>
 				<ng-template #thenBlock3>
-					<td *ngIf="term.passingUrlMetadata.description.matches.matchingScore == 2; else elseIfBlock3"
+					<td *ngIf="urlAssessment.highlightedMetadata[i].description.matches.matchingScore == 2; else elseIfBlock3"
 						data-label="Description" class="bg-success text-center small"
-						innerHTML="{{term.passingUrlMetadata.description.highlightedText}}"></td>
+						innerHTML="{{urlAssessment.highlightedMetadata[i].description.highlightedText}}"></td>
 					<ng-template #elseIfBlock3>
 						<td data-label="Description" class="bg-warning text-center small"
-							innerHTML="{{term.passingUrlMetadata.description.highlightedText}}"></td>
+							innerHTML="{{urlAssessment.highlightedMetadata[i].description.highlightedText}}"></td>
 					</ng-template>
 				</ng-template>
 				<ng-template #elseBlock3>
 					<td data-label="Description" class="bg-danger text-center small"
-						innerHTML="{{term.passingUrlMetadata.description.highlightedText}}"></td>
+						innerHTML="{{urlAssessment.highlightedMetadata[i].description.highlightedText}}"></td>
 				</ng-template>
 
 				<ng-container
-					*ngIf="term.passingUrlMetadata.keywords.matches.matchingScore > 0; then thenBlock4; else elseBlock4"></ng-container>
+					*ngIf="urlAssessment.highlightedMetadata[i].h1.matches.matchingScore > 0; then thenBlock4; else elseBlock4"></ng-container>
 				<ng-template #thenBlock4>
-					<td *ngIf="term.passingUrlMetadata.keywords.matches.matchingScore == 2; else elseIfBlock4"
-						data-label="Keywords" class="bg-success text-center small"
-						innerHTML="{{term.passingUrlMetadata.keywords.highlightedText}}"></td>
+					<td *ngIf="urlAssessment.highlightedMetadata[i].h1.matches.matchingScore == 2; else elseIfBlock4"
+						data-label="h1" class="bg-success text-center small"
+						innerHTML="{{urlAssessment.highlightedMetadata[i].h1.highlightedText}}"></td>
 					<ng-template #elseIfBlock4>
-						<td data-label="Keywords" class="bg-warning text-center small"
-							innerHTML="{{term.passingUrlMetadata.keywords.highlightedText}}"></td>
+						<td data-label="h1" class="bg-warning text-center small"
+							innerHTML="{{urlAssessment.highlightedMetadata[i].h1.highlightedText}}"></td>
 					</ng-template>
 				</ng-template>
 				<ng-template #elseBlock4>
-					<td data-label="Keywords" class="bg-danger text-center small"
-						innerHTML="{{term.passingUrlMetadata.keywords.highlightedText}}"></td>
+					<td data-label="h1" class="bg-danger text-center small"
+						innerHTML="{{urlAssessment.highlightedMetadata[i].h1.highlightedText}}"></td>
 				</ng-template>
 
-				<td data-label="Last Update"><small>{{term.passingUrlMetadata.lastUpdate}}</small></td>
+				<td data-label="Last Update"><small>{{urlAssessment.highlightedMetadata[i].lastUpdate.text}}</small></td>
 
-				<td *ngIf="term.passingUrlPosition > 0; else elseBlock5" data-label="Possition" class="text-center">
-					{{term.passingUrlPosition}}</td>
+				<td *ngIf="term.position > 0; else elseBlock5" data-label="Possition" class="text-center">
+					{{term.position}}</td>
 				<ng-template #elseBlock5>
 					<td data-label="Possition" class="text-center"></td>
 				</ng-template>
@@ -280,7 +283,7 @@
 		</tbody>
 	</table>
 
-	<div *ngIf="urlAssessment.hasContextual">
+	<div *ngIf="urlAssessment.internalSpecificTerms">
 		<div class="col-md-10">
 
 			<h2>{{ 'SCORE.CONTEXTUAL' | translate }}</h2>
@@ -291,28 +294,27 @@
 
 			<div class="well well-sm">
 				<p class="h5 text-center">{{ 'SCORE.SCORE' | translate }}</p>
-				<p class="text-center small">{{urlAssessment.contextualSuccessRate}}</p>
+				<p class="text-center small">{{urlAssessment.internalSpecificScore}}</p>
 				<p class="text-center"><meter
-						value="{{urlAssessment.contextualScore > 0 ? urlAssessment.contextualScore : 1}}" min="0"
-						max="100">{{urlAssessment.contextualScore > 0 ? urlAssessment.contextualScore : 1}}</meter>
+						value="{{urlAssessment.internalSpecificPasses > 0 ? urlAssessment.internalSpecificPasses : 1}}" min="0"
+						max="100">{{urlAssessment.internalSpecificPasses > 0 ? urlAssessment.internalSpecificPasses : 1}}</meter>
 				</p>
 			</div>
 
 
 		</div>
 
-		<table class="wb-tables table table-hover">
+		<table class="table table-striped table-hover row-border hover small">
 			<thead class="small">
 				<tr>
 					<th class="col-sm-1 text-center">{{ 'SCORE.HEAD_TERMS' | translate }}</th>
-					<th class="col-sm-1 text-center">{{ 'SCORE.ASSESSMENT_DATE' | translate }}</th>
 					<th class="col-sm-1 text-center">{{ 'SCORE.HEAD_RESULT' | translate }}</th>
 					<th class="col-sm-1 text-center" data-orderable="false">{{ 'SCORE.HEAD_TITLE' | translate }}
 					</th>
 					<th class="col-sm-3 text-center" data-orderable="false">{{ 'SCORE.HEAD_DESCRIPTION' | translate
 						}}
 					</th>
-					<th class="col-sm-2 text-center" data-orderable="false">{{ 'SCORE.HEAD_KEYWORDS' | translate }}
+					<th class="col-sm-2 text-center" data-orderable="false">{{ 'SCORE.HEAD_H1' | translate }}
 					</th>
 					<th class="col-sm-1 text-center">{{ 'SCORE.HEAD_LAST_UPDATE' | translate }}</th>
 					<th class="col-sm-1 text-center" data-orderable="false">{{ 'SCORE.HEAD_POSITION' | translate }}
@@ -320,70 +322,70 @@
 				</tr>
 			</thead>
 			<tbody class="small">
-				<tr *ngFor="let term of urlAssessment.contextualTerms; let i = index">
+				<tr *ngFor="let term of urlAssessment.internalSpecificTerms; let i = index">
 
 					<td data-label="Search Terms">{{term.term}}</td>
 
-					<td data-label="Assessment Date"><small>{{term.date}}</small></td>
+					<td data-label="Assessment name"><small>{{term.id}}</small></td>
 
-					<td *ngIf="term.isPass; else elseBlock" data-label="Result" class="bg-success text-center">{{
+					<td *ngIf="term.pass; else elseBlock" data-label="Result" class="bg-success text-center">{{
 						'SCORE.PASS' | translate }}</td>
 					<ng-template #elseBlock>
 						<td data-label="Result" class="bg-danger text-center">{{ 'SCORE.FAIL' | translate }}</td>
 					</ng-template>
 
 					<ng-container
-						*ngIf="term.passingUrlMetadata.title.matches.matchingScore > 0; then thenBlock2; else elseBlock2"></ng-container>
+						*ngIf="urlAssessment.highlightedMetadata[i].title.matches.matchingScore > 0; then thenBlock2; else elseBlock2"></ng-container>
 					<ng-template #thenBlock2>
-						<td *ngIf="term.passingUrlMetadata.title.matches.matchingScore == 2; else elseIfBlock2"
+						<td *ngIf="urlAssessment.highlightedMetadata[i].title.matches.matchingScore == 2; else elseIfBlock2"
 							data-label="Title" class="bg-success text-center small"
-							innerHTML="{{term.passingUrlMetadata.title.highlightedText}}"></td>
+							innerHTML="{{urlAssessment.highlightedMetadata[i].title.highlightedText}}"></td>
 						<ng-template #elseIfBlock2>
 							<td data-label="Title" class="bg-warning text-center small"
-								innerHTML="{{term.passingUrlMetadata.title.highlightedText}}"></td>
+								innerHTML="{{urlAssessment.highlightedMetadata[i].title.highlightedText}}"></td>
 						</ng-template>
 					</ng-template>
 					<ng-template #elseBlock2>
 						<td data-label="Title" class="bg-danger text-center small"
-							innerHTML="{{term.passingUrlMetadata.title.highlightedText}}"></td>
+							innerHTML="{{urlAssessment.highlightedMetadata[i].title.highlightedText}}"></td>
 					</ng-template>
 
 					<ng-container
-						*ngIf="term.passingUrlMetadata.description.matches.matchingScore > 0; then thenBlock3; else elseBlock3"></ng-container>
+						*ngIf="urlAssessment.highlightedMetadata[i].description.matches.matchingScore > 0; then thenBlock3; else elseBlock3"></ng-container>
 					<ng-template #thenBlock3>
-						<td *ngIf="term.passingUrlMetadata.description.matches.matchingScore == 2; else elseIfBlock3"
+						<td *ngIf="urlAssessment.highlightedMetadata[i].description.matches.matchingScore == 2; else elseIfBlock3"
 							data-label="Description" class="bg-success text-center small"
-							innerHTML="{{term.passingUrlMetadata.description.highlightedText}}"></td>
+							innerHTML="{{urlAssessment.highlightedMetadata[i].description.highlightedText}}"></td>
 						<ng-template #elseIfBlock3>
 							<td data-label="Description" class="bg-warning text-center small"
-								innerHTML="{{term.passingUrlMetadata.description.highlightedText}}"></td>
+								innerHTML="{{urlAssessment.highlightedMetadata[i].description.highlightedText}}"></td>
 						</ng-template>
 					</ng-template>
 					<ng-template #elseBlock3>
 						<td data-label="Description" class="bg-danger text-center small"
-							innerHTML="{{term.passingUrlMetadata.description.highlightedText}}"></td>
+							innerHTML="{{urlAssessment.highlightedMetadata[i].description.highlightedText}}"></td>
 					</ng-template>
 
 					<ng-container
-						*ngIf="term.passingUrlMetadata.keywords.matches.matchingScore > 0; then thenBlock4; else elseBlock4"></ng-container>
+						*ngIf="urlAssessment.highlightedMetadata[i].h1.matches.matchingScore > 0; then thenBlock4; else elseBlock4"></ng-container>
 					<ng-template #thenBlock4>
-						<td *ngIf="term.passingUrlMetadata.keywords.matches.matchingScore == 2; else elseIfBlock4"
-							data-label="Keywords" class="bg-success text-center small"
-							innerHTML="{{term.passingUrlMetadata.keywords.highlightedText}}"></td>
+						<td *ngIf="urlAssessment.highlightedMetadata[i].h1.matches.matchingScore == 2; else elseIfBlock4"
+							data-label="h1" class="bg-success text-center small"
+							innerHTML="{{urlAssessment.highlightedMetadata[i].h1.highlightedText}}"></td>
 						<ng-template #elseIfBlock4>
-							<td data-label="Keywords" class="bg-warning text-center small"
-								innerHTML="{{term.passingUrlMetadata.keywords.highlightedText}}"></td>
+							<td data-label="h1" class="bg-warning text-center small"
+								innerHTML="{{urlAssessment.highlightedMetadata[i].h1.highlightedText}}"></td>
 						</ng-template>
 					</ng-template>
 					<ng-template #elseBlock4>
-						<td data-label="Keywords" class="bg-danger text-center small"
-							innerHTML="{{term.passingUrlMetadata.keywords.highlightedText}}"></td>
+						<td data-label="h1" class="bg-danger text-center small"
+							innerHTML="{{urlAssessment.highlightedMetadata[i].h1.highlightedText}}"></td>
 					</ng-template>
 
-					<td data-label="Last Update"><small>{{term.passingUrlMetadata.lastUpdate}}</small></td>
+					<td data-label="Last Update"><small>{{urlAssessment.highlightedMetadata[i].lastUpdate.text}}</small></td>
 
-					<td *ngIf="term.passingUrlPosition > 0; else elseBlock5" data-label="Possition" class="text-center">
-						{{term.passingUrlPosition}}</td>
+					<td *ngIf="term.position > 0; else elseBlock5" data-label="Possition" class="text-center">
+						{{term.position}}</td>
 					<ng-template #elseBlock5>
 						<td data-label="Possition" class="text-center"></td>
 					</ng-template>
@@ -394,3 +396,4 @@
 	</div>
 	<br>
 </div>
+}

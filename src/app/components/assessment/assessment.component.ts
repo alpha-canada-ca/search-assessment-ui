@@ -1,139 +1,143 @@
 import {Component, OnInit} from '@angular/core';
-import {DataService} from 'src/app/services/data.service';
+import {DataService, Language} from 'src/app/services/data.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Title} from "@angular/platform-browser";
 import {Department} from 'src/app/components/admin/admin.component';
-import {LangChangeEvent, TranslateService} from '@ngx-translate/core';
-import {DatePipe} from '@angular/common';
+import {TranslateService} from '@ngx-translate/core';
+import {finalize, switchMap, tap} from "rxjs/operators";
+import {UserProfile} from "../login/login.component";
+import {of} from "rxjs";
 
 export interface Assessment {
-    contextualSuccessRate: '0%';
-    globalSuccessRate: '0%';
-    googleSuccessRate: '0%';
-    contextualScore: number;
-    globalScore: number;
-    googleScore: number;
+    id: number;
+    termList: string;
+    name: string;
     date: string;
-    currentSearchUrl: string;
-    contextualUrl: string;
-    globalUrl: string;
+}
+
+export interface AssessmentResponse {
+    id: number;
+    list: TermList;
+    name: string;
+    date: string;
+    hasSpecificSearch: boolean;
+    internalSpecificScore: string;
+    internalScore: string;
+    internalPasses: number;
+    internalSpecificUrl: string;
+    internalSpecificPasses: number;
+    googlePasses: number;
+    internalUrl: string;
+    googleScore: string;
     googleUrl: string;
-    type: string;
-    department: Department;
-    lang: string;
-    hasContextual: boolean;
-    contextualTerms: Evaluation[];
-    globalTerms: Evaluation[];
-    googleTerms: Evaluation[];
+    internalSpecificTerms: TermAssessment[];
+    internalTerms: TermAssessment[];
+    googleTerms: TermAssessment[];
+    highlightedMetadata: MetadataHighlight[];
+}
+
+export interface TermList {
+    id: number;
+    name: string;
+    language: Language;
+    user: UserProfile;
+}
+
+export interface TermAssessment {
+    id: number;
+    term: string;
+    pass: boolean;
+    position: number;
+    searchType: string;
+    targetUrl: string;
+}
+
+export interface MetadataHighlight {
+    title: Highlighting;
+    description: Highlighting;
+    h1: Highlighting;
+    lastUpdate: Highlighting;
+}
+
+export interface Highlighting {
+    text: string;
+    matches: Match;
+    highlightedText: string;
 }
 
 export interface AnalysisStatus {
-    numAnalysis: number;
+    message: number;
     queued: number;
-    toAnalyze: AssessmentQueue;
 }
-
-export interface AssessmentQueue {
-    google: string[];
-    contextual: string[];
-    global: string[];
-}
-
 
 export interface Match {
     matches: object;
     matchingScore: number;
 }
 
-export interface Metadata {
-    text: string;
-    highlightedText: string;
-    matches: Match;
-}
-
-export interface Fields {
-    title: Metadata;
-    description: Metadata;
-    keywords: Metadata;
-    lastUpdate: string;
-}
-
-export interface Evaluation {
-    date: string;
-    term: string;
-    isPass: boolean;
-    passingUrl: string;
-    passingUrlPosition: number;
-    passingUrlMetadata: Fields;
-}
-
-
 @Component({
-    selector: 'app-score',
+    selector: 'app-assessment',
     templateUrl: './assessment.component.html',
     styleUrls: ['./assessment.component.css'],
-    providers: [DatePipe],
     standalone: false
 })
-
 export class AssessmentComponent implements OnInit {
-
-    date: string = "";
-    assessment: Assessment = {
-        contextualSuccessRate: '0%',
-        globalSuccessRate: '0%',
-        googleSuccessRate: '0%',
-        contextualScore: 0,
-        globalScore: 0,
-        googleScore: 0,
-        date: '',
-        currentSearchUrl: '',
-        contextualUrl: '',
-        globalUrl: '',
-        googleUrl: '',
-        type: '',
-        department: {
-            id: 0,
-            nameEn: '',
-            nameFr: '',
-            acronymEn: '',
-            acronymFr: '',
-            searchUrlEn: '',
-            searchUrlFr: '',
-        },
-        lang: '',
-        hasContextual: false,
-        contextualTerms: [],
-        globalTerms: [],
-        googleTerms: []
-    }
-    analysisStatus: AnalysisStatus = {
-        numAnalysis: 0,
-        queued: 0,
-        toAnalyze: {
-            google: [],
-            contextual: [],
-            global: []
-        }
-    }
-    source: string = "";
-    lang: string = "";
+    id: number | undefined;
+    deptId: number = 0;
+    langId: number = 0;
     format: string = "json";
+    languages: Language[] = [];
+    lang: Language | undefined = {} as Language;
+    eng: Language | undefined = {} as Language;
+    fra: Language | undefined = {} as Language;
+    department: Department | undefined = {} as Department;
+
+    assessment: AssessmentResponse = {
+        id: 0,
+        list: {
+            id: 0,
+            name: '',
+            language: {} as Language,
+            user: {} as UserProfile
+        },
+        name: '',
+        date: '',
+        hasSpecificSearch: false,
+        internalPasses: 0,
+        internalSpecificPasses: 0,
+        googlePasses: 0,
+        internalSpecificUrl: '',
+        internalSpecificScore: '0%',
+        internalScore: '0%',
+        internalUrl: '',
+        googleScore: '0%',
+        googleUrl: '',
+        internalSpecificTerms: [],
+        internalTerms: [],
+        googleTerms: [],
+        highlightedMetadata: []
+    }
+
     blob: Blob | undefined;
-    availableDates: string[] = [];
     currentTranslation: string = "";
     statuses: any[] = [];
-    // to be deleted for the new UI
-    evaluatedTerms: Evaluation[] = [];
+    evaluatedTerms: TermAssessment[] = [];
     score: number = 0;
     successRate: string = '0%';
-
+    departmentAssessments: Assessment[] = [];
+    loadingLists: boolean = false;
 
     constructor(private titleService: Title, private dataService: DataService, private activatedRoute: ActivatedRoute, private translate: TranslateService, private router: Router) {
-        translate.onLangChange.subscribe((event: LangChangeEvent) => {
+        translate.onLangChange.subscribe(() => {
             translate.get('SCORE.TITLE').subscribe((res: string) => {
                 titleService.setTitle(res);
             });
+        });
+        dataService.listLanguages().subscribe((data: Language[]) => {
+            this.languages = data;
+            this.lang = data.find(lang => lang.id == this.langId);
+            this.eng = data.find(lang => lang.code === 'en');
+            this.fra = data.find(lang => lang.code === 'fr');
         });
     }
 
@@ -143,126 +147,48 @@ export class AssessmentComponent implements OnInit {
         });
         this.currentTranslation = this.translate.currentLang;
         this.activatedRoute.queryParams
-            .subscribe(params => {
-                this.source = params['source'];
-                this.lang = params['lang'];
-                this.date = params['date'];
-                this.format = params['format'];
-            });
+            .pipe(
+                tap(params => {
+                    this.deptId = params['deptId'];
+                    this.id = params['id'];
+                    this.langId = params['langId'];
+                    this.format = params['format'];
+                }),
+                switchMap(() => this.loadAssessmentsByDepartment$()), // <-- wait for lists
+                tap<Assessment[]>(lists => {
+                    this.departmentAssessments = lists;
 
-        this.dataService.getAssessment(this.source, this.lang, this.date)
-            .subscribe((data: any) => {
-                    this.assessment = {
-                        contextualSuccessRate: data.contextualSuccessRate,
-                        globalSuccessRate: data.globalSuccessRate,
-                        googleSuccessRate: data.googleSuccessRate,
-                        contextualScore: data.contextualSuccessRate ? Number(data.contextualSuccessRate.substring(0, data.contextualSuccessRate.length - 2)) : 0,
-                        globalScore: data.globalSuccessRate ? Number(data.globalSuccessRate.substring(0, data.globalSuccessRate.length - 2)) : 0,
-                        googleScore: data.googleSuccessRate ? Number(data.googleSuccessRate.substring(0, data.googleSuccessRate.length - 2)) : 0,
-                        currentSearchUrl: data.currentSearchUrl,
-                        contextualUrl: data.contextualUrl,
-                        globalUrl: data.globalUrl,
-                        googleUrl: data.googleUrl,
-                        date: data.date,
-                        type: data.type,
-                        department: data.department,
-                        lang: data.lang,
-                        hasContextual: data.hasContextual,
-                        contextualTerms: data.evaluatedTerms.contextual,
-                        globalTerms: data.evaluatedTerms.global,
-                        googleTerms: data.evaluatedTerms.google
-                    }
-                    if (this.assessment.contextualTerms && this.assessment.contextualTerms.length > 0) {
-                        this.evaluatedTerms = this.assessment.contextualTerms;
-                    } else if (this.assessment.globalTerms && this.assessment.globalTerms.length > 0) {
-                        this.evaluatedTerms = this.assessment.globalTerms;
-                    } else if (this.assessment.googleTerms && this.assessment.googleTerms.length > 0) {
-                        this.evaluatedTerms = this.assessment.googleTerms;
-                    }
-
-                    let count = 0;
-                    for (let i = 0; i < this.evaluatedTerms.length; i++) {
-                        if (this.assessment.hasContextual && this.assessment.googleTerms) {
-                            if (this.isPass(this.assessment.globalTerms[i], this.assessment.googleTerms[i], this.assessment.contextualTerms[i])) {
-                                count++;
-                                this.evaluatedTerms[i].isPass = true;
-                            } else {
-                                this.evaluatedTerms[i].isPass = false;
-                            }
-                        } else if (this.assessment.hasContextual) {
-                            if (this.isPass(this.assessment.globalTerms[i], this.assessment.contextualTerms[i])) {
-                                count++;
-                                this.evaluatedTerms[i].isPass = true;
-                            } else {
-                                this.evaluatedTerms[i].isPass = false;
-                            }
-                        } else if (this.assessment.googleTerms) {
-                            if (this.isPass(this.assessment.globalTerms[i], this.assessment.googleTerms[i])) {
-                                count++;
-                                this.evaluatedTerms[i].isPass = true;
-                            } else {
-                                this.evaluatedTerms[i].isPass = false;
-                            }
-                        } else {
-                            if (this.assessment.globalTerms[i].isPass) {
-                                count++;
-                                this.evaluatedTerms[i].isPass = true;
-                            }
+                    if (lists.length) {
+                        if (!this.id) {
+                            this.id = lists[0].id;
                         }
+                        this.loadAssessment()
+                    } else { // Since we couldn't get the department entity from an assessment
+                        this.setDepartment();
                     }
-                    this.score = count;
-                    if (this.evaluatedTerms.length > 0) {
-                        this.successRate = Math.round(((this.score / this.evaluatedTerms.length) * 100)) + '%';
-                    }
-                }
-            );
-
-        this.dataService.getAvailableDates(this.source, this.lang).subscribe((data: any) => {
-            this.availableDates = data.dates;
-        });
-
-        this.dataService.analyze(this.source, this.lang)
-            .subscribe((data: any) => this.analysisStatus = {
-                numAnalysis: data.numAnalysis,
-                queued: data.queued,
-                toAnalyze: data.toAnalyze
-            });
-
-        this.statuses = new Array(this.evaluatedTerms.length).fill(false);
+                })
+            )
+            .subscribe();
 
     }
 
     downloadCsv() {
-        this.dataService.downloadAssessment(this.source, this.lang, this.date, "csv")
+        this.dataService.downloadAssessmentAsCsv(this.id)
             .subscribe((data: any) => {
                 this.blob = new Blob([data], {type: 'text/csv'});
 
-                var downloadURL = window.URL.createObjectURL(data);
-                var link = document.createElement('a');
+                const downloadURL = URL.createObjectURL(data);
+                const link = document.createElement('a');
                 link.href = downloadURL;
-                link.download = this.assessment.department.acronymEn + '-' + this.assessment.date + '.csv';
+                link.download = this.assessment.name + '-' + this.assessment.date + '.csv';
                 link.click();
             });
-
-    }
-
-    onTypeOptionsSelected(value: string) {
-        const queryParams = {
-            "source": this.source,
-            "lang": this.lang,
-            "date": this.date
-        };
-        this.router.navigate([this.currentTranslation + '/assessment'], {
-            queryParams
-        }).then(() => {
-            window.location.reload();
-        })
     }
 
     onLangOptionsSelected(value: string) {
         const queryParams = {
-            "source": this.source,
-            "lang": value
+            "deptId": this.deptId,
+            "langId": value
         };
         this.router.navigate([this.currentTranslation + '/assessment'], {
             queryParams
@@ -271,11 +197,9 @@ export class AssessmentComponent implements OnInit {
         })
     }
 
-    onDateOptionsSelected(value: string) {
+    onListOptionsSelected(value: string) {
         const queryParams = {
-            "source": this.source,
-            "lang": this.lang,
-            "date": value
+            "id": value
         };
         this.router.navigate([this.currentTranslation + '/assessment'], {
             queryParams
@@ -289,16 +213,16 @@ export class AssessmentComponent implements OnInit {
         this.statuses[i] = !this.statuses[i];
     }
 
-    isPass(global: Evaluation, google: Evaluation, contextual?: Evaluation) {
-        if (contextual) {
-            return contextual.isPass && global.isPass && google.isPass;
+    isPass(internal: TermAssessment, google: TermAssessment, internalSpecific?: TermAssessment) {
+        if (internalSpecific) {
+            return internalSpecific.pass && internal.pass && google.pass;
         }
-        return global.isPass && google.isPass;
+        return internal.pass && google.pass;
     }
 
     unmatchedMetaTerms(matches: Match) {
         const j = JSON.parse(JSON.stringify(matches.matches));
-        var matchArray: string[] = [];
+        let matchArray: string[] = [];
         if (matches.matches && matches.matchingScore < 2) {
             Object.keys(j).forEach(key => {
                 if (j[key] == 0) {
@@ -312,7 +236,7 @@ export class AssessmentComponent implements OnInit {
 
     allMetaTerms(matches: Match) {
         const j = JSON.parse(JSON.stringify(matches.matches));
-        var matchArray: string[] = [];
+        let matchArray: string[] = [];
 
         Object.keys(j).forEach(key => {
             matchArray.push(key);
@@ -321,5 +245,74 @@ export class AssessmentComponent implements OnInit {
         return matchArray;
     }
 
+    private loadAssessmentsByDepartment$() {
+        this.loadingLists = true;
+
+        if (!this.deptId) {
+            this.loadingLists = false;
+            return of([]);
+        }
+
+        return this.dataService.getAssessmentsByDepartment(this.deptId, this.langId)
+            .pipe(finalize(() => (this.loadingLists = false)));
+    }
+
+    loadAssessment(): void {
+        this.dataService.getAssessment(this.id)
+            .subscribe((data: any) => {
+                    this.assessment = data;
+                    this.department = this.assessment.list.user.department;
+                    if (this.assessment.internalSpecificTerms) {
+                        this.evaluatedTerms = this.assessment.internalSpecificTerms;
+                    } else if (this.assessment.internalTerms) {
+                        this.evaluatedTerms = this.assessment.internalTerms;
+                    } else if (this.assessment.googleTerms) {
+                        this.evaluatedTerms = this.assessment.googleTerms;
+                    }
+
+                    let count = 0;
+                    for (let i = 0; i < this.evaluatedTerms.length; i++) {
+                        if (this.assessment.hasSpecificSearch && this.assessment.googleTerms) {
+                            if (this.isPass(this.assessment.internalTerms[i], this.assessment.googleTerms[i], this.assessment.internalSpecificTerms[i])) {
+                                count++;
+                                this.evaluatedTerms[i].pass = true;
+                            } else {
+                                this.evaluatedTerms[i].pass = false;
+                            }
+                        } else if (this.assessment.hasSpecificSearch) {
+                            if (this.isPass(this.assessment.internalTerms[i], this.assessment.internalSpecificTerms[i])) {
+                                count++;
+                                this.evaluatedTerms[i].pass = true;
+                            } else {
+                                this.evaluatedTerms[i].pass = false;
+                            }
+                        } else if (this.assessment.googleTerms) {
+                            if (this.isPass(this.assessment.internalTerms[i], this.assessment.googleTerms[i])) {
+                                count++;
+                                this.evaluatedTerms[i].pass = true;
+                            } else {
+                                this.evaluatedTerms[i].pass = false;
+                            }
+                        } else {
+                            if (this.assessment.internalTerms[i].pass) {
+                                count++;
+                                this.evaluatedTerms[i].pass = true;
+                            }
+                        }
+                    }
+                    this.score = count;
+                    if (this.evaluatedTerms.length > 0) {
+                        this.successRate = Math.round(((this.score / this.evaluatedTerms.length) * 100)) + '%';
+                    }
+                }
+            );
+    }
+
+    setDepartment() {
+        this.dataService.listDepartments()
+            .subscribe((data: Department[]) => {
+                this.department = data.find(dept => dept.id == this.deptId);
+            });
+    }
 
 }

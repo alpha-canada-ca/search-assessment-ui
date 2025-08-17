@@ -1,12 +1,12 @@
 import { Injectable, inject } from "@angular/core";
-import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from "@angular/router";
+import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 import { StorageService } from 'src/app/services/storage.service';
 
 @Injectable({
     providedIn: 'root'
 })
-class PermissionsService {
+export class AuthGuard implements CanActivate {
     lang: string = "";
     constructor(private router: Router, private storageService: StorageService, private translate: TranslateService) {
         this.lang = this.translate.currentLang;
@@ -20,9 +20,4 @@ class PermissionsService {
             return false;
         }
     }
-}
-
-export const AuthGuard: CanActivateFn = (next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean => {
-
-    return inject(PermissionsService).canActivate(next, state);
 }

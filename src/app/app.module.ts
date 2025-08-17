@@ -15,7 +15,8 @@ import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {LanguageComponent} from './components/language/language.component';
 import {LoginComponent} from './components/login/login.component';
 import {HomeComponent} from './components/home/home.component';
-import {AuthInterceptor} from "./auth.interceptor";
+import {AuthInterceptor} from "./auth/auth.interceptor";
+import {ListComponent} from "./components/list/list.component";
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -32,7 +33,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
         AdminComponent,
         LanguageComponent,
         LoginComponent,
-        HomeComponent
+        HomeComponent,
+        ListComponent
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,

@@ -1,10 +1,9 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {Title} from "@angular/platform-browser";
 import {ActivatedRoute} from '@angular/router';
 import {LangChangeEvent, TranslateService} from '@ngx-translate/core';
-import {DataService} from 'src/app/services/data.service';
-import {Subject} from "rxjs";
+import {DataService, Language} from 'src/app/services/data.service';
 
 const urlReg = '(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?';
 
@@ -45,9 +44,9 @@ export interface UserRequest {
 })
 export class AdminComponent implements OnInit {
 
-    departments: Department[];
+    departments: Department[] = [];
     department!: Department;
-    users: User[];
+    users: User[] = [];
     user!: UserRequest;
     isDeptSuccess: boolean = false;
     isDeptSubmitted: boolean = false;
@@ -55,8 +54,9 @@ export class AdminComponent implements OnInit {
     isUserSuccess: boolean = false;
     isUserSubmitted: boolean = false;
     userErrorMessage: string | undefined;
-
     currentTranslation: string | undefined;
+    langEnId: number | undefined;
+    langFrId: number | undefined
 
     deptForm = new UntypedFormGroup({
         nameEn: new UntypedFormControl('', [Validators.required, Validators.minLength(10)]),
@@ -85,9 +85,6 @@ export class AdminComponent implements OnInit {
             titleService.setTitle(res);
         });
 
-        this.departments = this.route.snapshot.data['departments'];
-        this.users = this.route.snapshot.data['users'];
-
         translate.onLangChange.subscribe((event: LangChangeEvent) => {
             translate.get('ADMIN.TITLE').subscribe((res: string) => {
                 titleService.setTitle(res);
@@ -99,6 +96,7 @@ export class AdminComponent implements OnInit {
         this.currentTranslation = this.translate.currentLang;
         this.loadDept();
         this.loadUsers();
+        this.setLangIds();
     }
 
     get deptC() {
@@ -110,7 +108,7 @@ export class AdminComponent implements OnInit {
     }
 
     private loadDept() {
-        this.ds.getDepartments().subscribe((data: any) => {
+        this.ds.listDepartments().subscribe((data: any) => {
             this.departments = data;
         });
     }
@@ -139,10 +137,9 @@ export class AdminComponent implements OnInit {
         this.department.searchUrlEn = this.deptForm.value.urlEn;
         this.department.searchUrlFr = this.deptForm.value.urlFr;
 
-        this.isDeptSubmitted = true;
-
         this.ds.addDepartment(this.department).subscribe({
             next: async () => {
+                this.isDeptSubmitted = true;
                 this.deptForm.reset();
                 this.isDeptSuccess = true;
                 this.loadDept();
@@ -150,6 +147,7 @@ export class AdminComponent implements OnInit {
                 this.isDeptSubmitted = false;
             },
             error: (err) => {
+                this.isDeptSubmitted = true;
                 this.isDeptSuccess = false;
 
                 if (err.status === 0) {
@@ -189,10 +187,9 @@ export class AdminComponent implements OnInit {
             departmentId: this.userForm.value.departmentId
         }
 
-        this.isUserSubmitted = true;
-
         this.ds.addUser(this.user).subscribe({
             next: async () => {
+                this.isUserSubmitted = true;
                 this.userForm.reset();
                 this.isUserSuccess = true;
                 this.loadUsers();
@@ -200,6 +197,7 @@ export class AdminComponent implements OnInit {
                 this.isUserSubmitted = false;
             },
             error: (err) => {
+                this.isUserSubmitted = true;
                 this.isUserSuccess = false;
 
                 if (err.status === 0) {
@@ -228,6 +226,14 @@ export class AdminComponent implements OnInit {
 
 
     }
+
+    private setLangIds(): void {
+        this.ds.listLanguages().subscribe((data: Language[]) => {
+            this.langEnId = data.find(lang => lang.code.toLowerCase() === 'en')?.id;
+            this.langFrId = data.find(lang => lang.code.toLowerCase() === 'fr')?.id;
+        });
+    }
+
 
 
 }

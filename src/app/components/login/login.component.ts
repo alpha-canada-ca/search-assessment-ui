@@ -5,6 +5,15 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {LangChangeEvent, TranslateService} from '@ngx-translate/core';
 import {DataService} from 'src/app/services/data.service';
 import {AuthService} from "../../services/auth.service";
+import {Department} from "../admin/admin.component";
+
+export interface UserProfile {
+    email:     string;
+    firstName: string;
+    lastName:  string;
+    admin:     boolean;
+    department: Department;
+}
 
 @Component({
     selector: 'app-login',
@@ -16,7 +25,6 @@ export class LoginComponent implements OnInit {
     isSuccess: boolean = false;
     isSubmitted: boolean = false;
     currentTranslation: string | undefined;
-    isLogout: boolean = false;
     errorMessage: string | undefined;
 
     form = new UntypedFormGroup({
@@ -24,7 +32,8 @@ export class LoginComponent implements OnInit {
         password: new UntypedFormControl('', [Validators.required, Validators.minLength(1)]),
     });
 
-    constructor(private activatedRoute: ActivatedRoute, private titleService: Title, private dataService: DataService, private router: Router, private translate: TranslateService, private authService: AuthService) {
+    constructor(private activatedRoute: ActivatedRoute, private titleService: Title, private dataService: DataService,
+                private router: Router, private translate: TranslateService, private authService: AuthService) {
         translate.onLangChange.subscribe((event: LangChangeEvent) => {
             translate.get('LOGIN.TITLE').subscribe((res: string) => {
                 titleService.setTitle(res);
@@ -40,18 +49,20 @@ export class LoginComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.activatedRoute.queryParams
-            .subscribe(params => {
-                this.isLogout = params['isLogout'];
-            });
         this.currentTranslation = this.translate.currentLang;
         this.translate.get('LOGIN.TITLE').subscribe((res: string) => {
             this.titleService.setTitle(res);
         });
 
-        if (this.isLogout) {
-            this.authService.logout();
-        }
+        // This logic now handles the logout flow
+        this.activatedRoute.queryParams
+            .subscribe(params => {
+                if (params['isLogout']) {
+                    this.authService.logout();
+                    // Force a reload to the clean login page to ensure the header updates correctly
+                    window.location.href = `/${this.currentTranslation}/login`;
+                }
+            });
     }
 
     submit() {
@@ -59,11 +70,10 @@ export class LoginComponent implements OnInit {
             email: this.form.value.username,
             password: this.form.value.password
         }).subscribe({
-            next: async () => {
+            next: profile => {
                 this.isSubmitted = true;
                 this.isSuccess = true;
-                await new Promise(f => setTimeout(f, 2000));
-                this.router.navigate([this.currentTranslation + '/admin']);
+                window.location.href = `/${this.currentTranslation}/list`;
             },
             error: (err) => {
                 this.isSuccess = false;

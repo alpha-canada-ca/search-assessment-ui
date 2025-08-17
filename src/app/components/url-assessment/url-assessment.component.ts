@@ -1,142 +1,137 @@
-import { Component, OnInit } from '@angular/core';
-import { DataService } from 'src/app/services/data.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Title } from "@angular/platform-browser";
-import { Department } from 'src/app/components/admin/admin.component';
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
-import { DatePipe } from '@angular/common';
-import { Evaluation } from '../assessment/assessment.component';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {DataService, Language} from 'src/app/services/data.service';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Title} from "@angular/platform-browser";
+import {Department} from 'src/app/components/admin/admin.component';
+import {LangChangeEvent, TranslateService} from '@ngx-translate/core';
+import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {Assessment, MetadataHighlight, TermAssessment} from "../assessment/assessment.component";
+import {finalize, switchMap, tap} from "rxjs/operators";
+import {of} from "rxjs";
 
 const urlReg = '(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?';
 
-export interface UrlAssessment {
-  isAssessmentRetrieved: boolean;
-  globalSuccessRate: '0%';
-  globalScore: number;
-  googleSuccessRate: '0%';
-  googleScore: number;
-  contextualSuccessRate: '0%';
-  contextualScore: number;
-  date: string;
-  department: Department;
-  lang: string;
-  hasContextual: boolean;
-  globalTerms: Evaluation[];
-  googleTerms: Evaluation[];
-  contextualTerms: Evaluation[];
+export interface UrlAssessmentResponse {
+    url: string;
+    internalPasses: number;
+    internalSpecificPasses: number;
+    googlePasses: number;
+    internalSpecificScore: string;
+    internalScore: string;
+    googleScore: string;
+    internalSpecificTerms: TermAssessment[];
+    internalTerms: TermAssessment[];
+    googleTerms: TermAssessment[];
+    highlightedMetadata: MetadataHighlight[];
 }
 
 @Component({
     selector: 'app-score',
     templateUrl: './url-assessment.component.html',
     styleUrls: ['./url-assessment.component.css'],
-    providers: [DatePipe],
     standalone: false
 })
 
 export class UrlAssessmentComponent implements OnInit {
 
-  departments: Department[] = [];
+    departments: Department[] = [];
+    languages: Language[] = [];
 
-  url: string = "";
-  urlAssessment: UrlAssessment = {
-    isAssessmentRetrieved: false,
-    globalSuccessRate: '0%',
-    googleSuccessRate: '0%',
-    contextualSuccessRate: '0%',
-    globalScore: 0,
-    googleScore: 0,
-    contextualScore: 0,
-    date: '',
-    department: {
-      id: 0,
-      nameEn: '',
-      nameFr: '',
-      acronymEn: '',
-      acronymFr: '',
-      searchUrlEn: '',
-      searchUrlFr: '',
-    },
-    lang: '',
-    hasContextual: false,
-    globalTerms: [],
-    googleTerms: [],
-    contextualTerms: []
-  }
+    url: string = '';
+    urlAssessment: UrlAssessmentResponse = {
+        url: '',
+        internalPasses: 0,
+        internalSpecificPasses: 0,
+        googlePasses: 0,
+        internalSpecificScore: '0%',
+        internalScore: '0%',
+        googleScore: '0%',
+        internalSpecificTerms: [],
+        internalTerms: [],
+        googleTerms: [],
+        highlightedMetadata: []
+    }
 
-  source: string = "";
-  lang: string = "";
-  currentTranslation: string = "";
+    deptId: number = 0;
+    langId: number = 0;
+    currentTranslation: string = "";
+    lang: Language | undefined;
+    dept: Department | undefined;
+    eng: Language | undefined = {} as Language;
+    fra: Language | undefined = {} as Language;
 
-  form = new UntypedFormGroup({
-    source: new UntypedFormControl('', Validators.required),
-    lang: new UntypedFormControl('', Validators.required),
-    url: new UntypedFormControl('', [Validators.required, Validators.pattern(urlReg)])
-  });
-  isSubmitted: boolean = false;
-
-
-  constructor(private titleService: Title, private dataService: DataService, private activatedRoute: ActivatedRoute, private router: Router, private translate: TranslateService) {
-    dataService.getDepartments().subscribe((data: any) => {
-      this.departments = data.departments;
+    form = new UntypedFormGroup({
+        deptId: new UntypedFormControl('', Validators.required),
+        langId: new UntypedFormControl('', Validators.required),
+        url: new UntypedFormControl('', [Validators.required, Validators.pattern(urlReg)])
     });
-    translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      translate.get('URL.TITLE').subscribe((res: string) => {
-        titleService.setTitle(res);
-      });
-    });
-  }
+    isSubmitted: boolean = false;
 
-  ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.currentTranslation = event.lang;
-    });
-    this.translate.get('URL.TITLE').subscribe((res: string) => {
-      this.titleService.setTitle(res);
-    });
-    this.currentTranslation = this.translate.currentLang;
-    this.activatedRoute.queryParams
-      .subscribe(params => {
-        this.source = params['source'];
-        this.lang = params['lang'];
-        this.url = params['url'];
-      });
 
-    if (this.source && this.url) {
-      this.dataService.getUrlAssessment(this.source, this.lang, this.url)
-        .subscribe((data: any) => this.urlAssessment = {
-          isAssessmentRetrieved: true,
-          globalSuccessRate: data.globalSuccessRate,
-          googleSuccessRate: data.googleSuccessRate,
-          contextualSuccessRate: data.contextualSuccessRate,
-          globalScore: Number(data.globalSuccessRate.substring(0, data.globalSuccessRate.length - 2)),
-          googleScore: Number(data.googleSuccessRate.substring(0, data.googleSuccessRate.length - 2)),
-          contextualScore: data.contextualSuccessRate != null ? Number(data.contextualSuccessRate.substring(0, data.contextualSuccessRate - 2)) : 0,
-          date: data.date,
-          department: data.department,
-          lang: data.lang,
-          hasContextual: data.hasContextual,
-          globalTerms: data.globalTerms,
-          googleTerms: data.googleTerms,
-          contextualTerms: data.contextualTerms
+    constructor(private titleService: Title, private dataService: DataService, private activatedRoute: ActivatedRoute, private router: Router, private translate: TranslateService) {
+        translate.onLangChange.subscribe(() => {
+            translate.get('URL.TITLE').subscribe((res: string) => {
+                titleService.setTitle(res);
+            });
         });
     }
-  }
 
-  get c() {
-    return this.form.controls;
-  }
+    ngOnInit() {
+        this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+            this.currentTranslation = event.lang;
+        });
+        this.translate.get('URL.TITLE').subscribe((res: string) => {
+            this.titleService.setTitle(res);
+        });
+        this.currentTranslation = this.translate.currentLang;
+        this.activatedRoute.queryParams
+            .pipe(
+                tap(params => {
+                    this.deptId = params['deptId'];
+                    this.langId = params['langId'];
+                    this.url = params['url'];
+                }),
+                switchMap(() => this.loadLanguages$()),
+                tap<Language[]>(langs => {
+                    this.languages = langs;
+                    this.lang = langs.find(l => l.id == this.langId);
+                    this.eng = langs.find(l => l.code === 'en');
+                    this.fra = langs.find(l => l.code === 'fr');
+                }),
+                switchMap(() => this.loadDepartments$()),
+                tap<Department[]>(depts => {
+                    this.departments = depts;
+                    this.dept = depts.find(dept => dept.id == this.deptId);
+                })
+            )
+            .subscribe();
+        if (this.deptId && this.url && this.langId) {
+            this.dataService.getUrlAssessment(this.url, this.deptId, this.langId)
+                .subscribe((data: any) => this.urlAssessment = data);
+        }
+    }
 
-  submit() {
-    this.isSubmitted = true;
-    const queryParams = this.form.value;
-    this.router.navigate([this.currentTranslation + '/urlAssessment'], {
-      queryParams
-    }).then(() => {
-      window.location.reload();
-    })
-  }
+    get c() {
+        return this.form.controls;
+    }
+
+    submit() {
+        this.isSubmitted = true;
+        const queryParams = this.form.value;
+        this.router.navigate([this.currentTranslation + '/urlAssessment'], {
+            queryParams
+        }).then(() => {
+            window.location.reload();
+        })
+    }
+
+    private loadLanguages$() {
+        return this.dataService.listLanguages();
+    }
+
+    private loadDepartments$() {
+        return this.dataService.listDepartments();
+    }
 
 
 }

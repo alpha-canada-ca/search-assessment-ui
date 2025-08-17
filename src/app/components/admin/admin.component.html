@@ -1,429 +1,431 @@
 <main property="mainContentOfPage" class="container" resource="#wb-main" typeof="WebPageElement">
-  <h1 property="name">{{ 'ADMIN.TITLE' | translate }}</h1>
+    <h1 property="name">{{ 'ADMIN.TITLE' | translate }}</h1>
 
-  <div class="row">
+    <div class="row">
 
-    <div class="col-md-10">
+        <div class="col-md-10">
 
-      <h3>{{ 'ADMIN.DEPTS_SUBTITLE' | translate }}</h3>
-      <br/>
+            <h3>{{ 'ADMIN.DEPTS_SUBTITLE' | translate }}</h3>
+            <br/>
 
-      <table class="row-border hover small">
-        <thead class="small">
-          <tr>
-            <th>{{ 'ADMIN.HEAD_DEPT_EN' | translate }}</th>
-            <th>{{ 'ADMIN.HEAD_DEPT_FR' | translate }}</th>
-            <th>{{ 'ADMIN.HEAD_ACRONYM_EN' | translate }}</th>
-            <th>{{ 'ADMIN.HEAD_ACRONYM_FR' | translate }}</th>
-            <th data-orderable="false">{{ 'ADMIN.HEAD_SEARCH_FR' | translate }}</th>
-            <th data-orderable="false">{{ 'ADMIN.HEAD_SEARCH_FR' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody class="small">
-          @for (department of departments; track department) {
-            <tr>
-              <td><a
-              href="/{{currentTranslation}}/assessment?source={{department.acronymEn | lowercase}}&type={{ds.defaultSearchType(department)}}&lang=en">{{ department.nameEn }}</a>
-            </td>
-            <td><a
-            href="/{{currentTranslation}}/assessment?source={{department.acronymEn | lowercase}}&type={{ds.defaultSearchType(department)}}&lang=en">{{ department.nameFr }}</a>
-          </td>
-          <td class="center"><a
-          href="/{{currentTranslation}}/assessment?source={{department.acronymEn | lowercase}}&type={{ds.defaultSearchType(department)}}&lang=en">{{ department.acronymEn }}</a>
-        </td>
-        <td class="center"><a
-        href="/{{currentTranslation}}/assessment?source={{department.acronymEn | lowercase}}&type={{ds.defaultSearchType(department)}}&lang=en">{{ department.acronymFr }}</a>
-      </td>
-      <td><a href="{{department.searchUrlEn}}">{{ department.searchUrlEn }}</a></td>
-      <td><a href="{{department.searchUrlFr}}">{{ department.searchUrlFr }}</a></td>
-    </tr>
-  }
-</tbody>
-</table>
-</div>
-</div>
-<br/>
-
-<div class="row">
-
-  <div class="col-md-10">
-
-    <h3>{{ 'ADMIN.USERS_SUBTITLE' | translate }}</h3>
+            <table class="table table-striped table-hover row-border hover small">
+                <caption class="wb-inv">{{ 'ADMIN.DEPTS_SUBTITLE' | translate }}</caption>
+                <thead class="small">
+                <tr>
+                    <th scope="col">{{ 'ADMIN.HEAD_DEPT_EN' | translate }}</th>
+                    <th scope="col">{{ 'ADMIN.HEAD_DEPT_FR' | translate }}</th>
+                    <th scope="col">{{ 'ADMIN.HEAD_ACRONYM_EN' | translate }}</th>
+                    <th scope="col">{{ 'ADMIN.HEAD_ACRONYM_FR' | translate }}</th>
+                    <th scope="col">{{ 'ADMIN.HEAD_SEARCH_FR' | translate }}</th>
+                    <th scope="col">{{ 'ADMIN.HEAD_SEARCH_FR' | translate }}</th>
+                </tr>
+                </thead>
+                <tbody class="small">
+                    @for (department of departments; track department) {
+                        <tr>
+                            <td><a
+                                    href="/{{currentTranslation}}/assessment?deptId={{department.id}}&langId={{langEnId}}">{{ department.nameEn }}</a>
+                            </td>
+                            <td><a
+                                    href="/{{currentTranslation}}/assessment?deptId={{department.id}}&langId={{langFrId}}">{{ department.nameFr }}</a>
+                            </td>
+                            <td class="center"><a
+                                    href="/{{currentTranslation}}/assessment?deptId={{department.id}}&langId={{langEnId}}">{{ department.acronymEn }}</a>
+                            </td>
+                            <td class="center"><a
+                                    href="/{{currentTranslation}}/assessment?deptId={{department.id}}&langId={{langFrId}}">{{ department.acronymFr }}</a>
+                            </td>
+                            <td><a href="{{department.searchUrlEn}}">{{ department.searchUrlEn }}</a></td>
+                            <td><a href="{{department.searchUrlFr}}">{{ department.searchUrlFr }}</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
     <br/>
 
-    <table class="row-border hover small">
-      <thead class="small">
-        <tr>
-          <th>{{ 'ADMIN.HEAD_FIRST_NAME' | translate }}</th>
-          <th>{{ 'ADMIN.HEAD_LAST_NAME' | translate }}</th>
-          <th data-orderable="false">{{ 'ADMIN.HEAD_EMAIL' | translate }}</th>
-          <th>{{ 'ADMIN.HEAD_ADMIN' | translate }}</th>
-          <th>{{ 'GENERAL.DEPARTMENT_AGENCY' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody class="small">
-        @for (user of users; track user) {
-          <tr>
-            <td>{{ user.firstName }}</td>
-            <td>{{ user.lastName }}</td>
-            <td><a
-            href="mailto:{{ user.email }}">{{ user.email }}</a>
-          </td>
-          <td>{{ user.admin }}</td>
-          <td>{{ user.department.acronymEn }}/{{ user.department.acronymFr }}</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-</div>
-</div>
+    <div class="row">
 
-<div class="row">
+        <div class="col-md-10">
 
-  <div class="col-sm-5">
+            <h3>{{ 'ADMIN.USERS_SUBTITLE' | translate }}</h3>
+            <br/>
 
-    <h3 id="basic">{{ 'ADMIN.FORM_TITLE' | translate }}</h3>
-    <div class="panel panel-default small">
-      <div class="panel-body">
-        <form [formGroup]="deptForm" (ngSubmit)="submitDepartment()">
-          @if (isDeptSubmitted && isDeptSuccess) {
-            <div class="alert alert-success">
-              <p>{{ department.acronymEn }}
-              /{{ department.acronymFr }} {{ 'ADMIN.FORM_SUCCESS_MESSAGE' | translate }}</p>
-            </div>
-          }
-          @if (isDeptSubmitted && !isDeptSuccess && !deptErrorMessage) {
-            <div
-              class="alert alert-danger">
-              <p>{{ 'ADMIN.FORM_ERROR_MESSAGE' | translate }}</p>
-            </div>
-          } @else {
-            @if (deptErrorMessage) {
-              <div class="alert alert-danger">
-                <p>{{ deptErrorMessage }}</p>
-              </div>
-            }
-          }
-
-          <fieldset class="legend-brdr-bttm">
-            <legend>{{ 'GENERAL.DEPARTMENT' | translate }}</legend>
-            <div class="form-group">
-              <label for="nameEn" class="col-sm-6 control-label required">{{
-                'ADMIN.FORM_NAME_EN' | translate
-              }}</label>
-              @if (deptC['nameEn'].touched && deptC['nameEn'].invalid) {
-                <strong class="error">
-                  @if (deptC['nameEn'].errors?.['required']) {
-                    <span class="label label-danger">
-                      {{ 'ADMIN.FORM_NAME_REQ' | translate }}
-                    </span>
-                  }
-                  @if (deptC['nameEn'].errors?.['minlength']) {
-                    <span class="label label-danger">
-                      {{ 'ADMIN.FORM_10_CHAR_REQ' | translate }}
-                    </span>
-                  }
-                </strong>
-              }
-              <div class="col-sm-5">
-                <input type="text" class="form-control" id="nameEn" formControlName="nameEn"
-                  required="required"/>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="nameFr" class="col-sm-6 control-label required">{{
-                'ADMIN.FORM_NAME_FR' | translate
-              }}</label>
-              @if (deptC['nameFr'].touched && deptC['nameFr'].invalid) {
-                <strong class="error">
-                  @if (deptC['nameFr'].errors?.['required']) {
-                    <span class="label label-danger">
-                      {{ 'ADMIN.FORM_NAME_REQ' | translate }}
-                    </span>
-                  }
-                  @if (deptC['nameFr'].errors?.['minlength']) {
-                    <span class="label label-danger">
-                      {{ 'ADMIN.FORM_10_CHAR_REQ' | translate }}
-                    </span>
-                  }
-                </strong>
-              }
-              <div class="col-sm-5">
-                <input type="text" class="form-control" id="nameFr" formControlName="nameFr"
-                  required="required"/>
-              </div>
-            </div>
-
-            <legend>{{ 'ADMIN.FORM_DEPT_ACRONYM' | translate }}</legend>
-            <div class="form-group">
-              <label for="acronymEn" class="col-sm-6 control-label required">{{
-                'ADMIN.FORM_ACRONYM_EN' | translate
-              }}</label>
-              @if (deptC['acronymEn'].touched && deptC['acronymEn'].invalid) {
-                <strong class="error">
-                  @if (deptC['acronymEn'].errors?.['required']) {
-                    <span class="label label-danger">
-                      {{ 'ADMIN.FORM_ACRONYM_REQ' | translate }}
-                    </span>
-                  }
-                  @if (deptC['acronymEn'].errors?.['minlength']) {
-                    <span class="label label-danger">
-                      {{ 'ADMIN.FORM_2_CHAR_REQ' | translate }}
-                    </span>
-                  }
-                </strong>
-              }
-              <div class="col-sm-5">
-                <input type="text" class="form-control" id="acronymEn"
-                  formControlName="acronymEn"
-                  required="required"/>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="acronymFr" class="col-sm-6 control-label required">{{
-                'ADMIN.FORM_ACRONYM_FR' | translate
-              }}</label>
-              @if (deptC['acronymFr'].touched && deptC['acronymFr'].invalid) {
-                <strong class="error">
-                  @if (deptC['acronymFr'].errors?.['required']) {
-                    <span class="label label-danger">
-                      {{ 'ADMIN.FORM_ACRONYM_REQ' | translate }}
-                    </span>
-                  }
-                  @if (deptC['acronymFr'].errors?.['minlength']) {
-                    <span class="label label-danger">
-                      {{ 'ADMIN.FORM_2_CHAR_REQ' | translate }}
-                    </span>
-                  }
-                </strong>
-              }
-              <div class="col-sm-5">
-                <input type="text" class="form-control" id="acronymFr"
-                  formControlName="acronymFr"
-                  required="required"/>
-              </div>
-            </div>
-
-            <legend>{{ 'ADMIN.FORM_DEPT_SEARCH' | translate }}</legend>
-            <div class="form-group">
-              <label for="urlEn"
-              class="col-sm-6 control-label">{{ 'ADMIN.FORM_SEARCH_EN' | translate }}</label>
-              @if (deptC['urlEn'].touched && deptC['urlEn'].invalid) {
-                <strong class="error">
-                  <span class="label label-danger">
-                    {{ 'ADMIN.FORM_URL_ERROR' | translate }}
-                  </span>
-                </strong>
-              }
-              <div class="col-sm-5">
-                <input type="text" class="form-control" id="urlEn" formControlName="urlEn"/>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="urlFr"
-              class="col-sm-6 control-label">{{ 'ADMIN.FORM_SEARCH_FR' | translate }}</label>
-              @if (deptC['urlFr'].touched && deptC['urlFr'].invalid) {
-                <strong class="error">
-                  <span class="label label-danger">
-                    {{ 'ADMIN.FORM_URL_ERROR' | translate }}
-                  </span>
-                </strong>
-              }
-              <div class="col-sm-5">
-                <input type="text" class="form-control" id="urlFr" formControlName="urlFr"/>
-              </div>
-            </div>
-          </fieldset>
-          <div class="form-group">
-            <div class="col-sm-offset-4 col-ms-8">
-              <button [disabled]="deptForm.invalid" type="submit" class="btn btn-default">{{
-                'ADMIN.FORM_ADD' | translate
-                }}
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
+            <table class="table table-striped table-hover row-border hover small">
+                <caption class="wb-inv">{{ 'ADMIN.USERS_SUBTITLE' | translate }}</caption>
+                <thead class="small">
+                <tr>
+                    <th scope="col">{{ 'ADMIN.HEAD_FIRST_NAME' | translate }}</th>
+                    <th scope="col">{{ 'ADMIN.HEAD_LAST_NAME' | translate }}</th>
+                    <th scope="col">{{ 'ADMIN.HEAD_EMAIL' | translate }}</th>
+                    <th scope="col">{{ 'ADMIN.HEAD_ADMIN' | translate }}</th>
+                    <th scope="col">{{ 'GENERAL.DEPARTMENT_AGENCY' | translate }}</th>
+                </tr>
+                </thead>
+                <tbody class="small">
+                    @for (user of users; track user) {
+                        <tr>
+                            <td>{{ user.firstName }}</td>
+                            <td>{{ user.lastName }}</td>
+                            <td><a
+                                    href="mailto:{{ user.email }}">{{ user.email }}</a>
+                            </td>
+                            <td>{{ user.admin }}</td>
+                            <td>{{ user.department.acronymEn }}/{{ user.department.acronymFr }}</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
-  </div>
-  <div class="col-sm-5">
 
-    <h3 id="basic2">{{ 'ADMIN.FORM2_TITLE' | translate }}</h3>
-    <div class="panel panel-default small">
-      <div class="panel-body">
-        <form [formGroup]="userForm" (ngSubmit)="submitUser()">
-          @if (isUserSubmitted && isUserSuccess) {
-            <div class="alert alert-success">
-              <p>{{ user.firstName }} {{ user.lastName }} {{ 'ADMIN.FORM_SUCCESS_MESSAGE' | translate }}</p>
+    <div class="row">
+
+        <div class="col-sm-5">
+
+            <h3 id="basic">{{ 'ADMIN.FORM_TITLE' | translate }}</h3>
+            <div class="panel panel-default small">
+                <div class="panel-body">
+                    <form [formGroup]="deptForm" (ngSubmit)="submitDepartment()">
+                        @if (isDeptSubmitted && isDeptSuccess) {
+                            <div class="alert alert-success">
+                                <p>{{ department.acronymEn }}
+                                    /{{ department.acronymFr }} {{ 'ADMIN.FORM_SUCCESS_MESSAGE' | translate }}</p>
+                            </div>
+                        }
+                        @if (isDeptSubmitted && !isDeptSuccess && !deptErrorMessage) {
+                            <div
+                                    class="alert alert-danger">
+                                <p>{{ 'ADMIN.FORM_ERROR_MESSAGE' | translate }}</p>
+                            </div>
+                        } @else {
+                            @if (deptErrorMessage) {
+                                <div class="alert alert-danger">
+                                    <p>{{ deptErrorMessage }}</p>
+                                </div>
+                            }
+                        }
+
+                        <fieldset class="legend-brdr-bttm">
+                            <legend>{{ 'GENERAL.DEPARTMENT' | translate }}</legend>
+                            <div class="form-group">
+                                <label for="nameEn" class="col-sm-6 control-label required">{{
+                                        'ADMIN.FORM_NAME_EN' | translate
+                                    }}</label>
+                                @if (deptC['nameEn'].touched && deptC['nameEn'].invalid) {
+                                    <strong class="error">
+                                        @if (deptC['nameEn'].errors?.['required']) {
+                                            <span class="label label-danger">
+                      {{ 'ADMIN.FORM_NAME_REQ' | translate }}
+                    </span>
+                                        }
+                                        @if (deptC['nameEn'].errors?.['minlength']) {
+                                            <span class="label label-danger">
+                      {{ 'ADMIN.FORM_10_CHAR_REQ' | translate }}
+                    </span>
+                                        }
+                                    </strong>
+                                }
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="nameEn" formControlName="nameEn"
+                                           required="required"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="nameFr" class="col-sm-6 control-label required">{{
+                                        'ADMIN.FORM_NAME_FR' | translate
+                                    }}</label>
+                                @if (deptC['nameFr'].touched && deptC['nameFr'].invalid) {
+                                    <strong class="error">
+                                        @if (deptC['nameFr'].errors?.['required']) {
+                                            <span class="label label-danger">
+                      {{ 'ADMIN.FORM_NAME_REQ' | translate }}
+                    </span>
+                                        }
+                                        @if (deptC['nameFr'].errors?.['minlength']) {
+                                            <span class="label label-danger">
+                      {{ 'ADMIN.FORM_10_CHAR_REQ' | translate }}
+                    </span>
+                                        }
+                                    </strong>
+                                }
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="nameFr" formControlName="nameFr"
+                                           required="required"/>
+                                </div>
+                            </div>
+
+                            <legend>{{ 'ADMIN.FORM_DEPT_ACRONYM' | translate }}</legend>
+                            <div class="form-group">
+                                <label for="acronymEn" class="col-sm-6 control-label required">{{
+                                        'ADMIN.FORM_ACRONYM_EN' | translate
+                                    }}</label>
+                                @if (deptC['acronymEn'].touched && deptC['acronymEn'].invalid) {
+                                    <strong class="error">
+                                        @if (deptC['acronymEn'].errors?.['required']) {
+                                            <span class="label label-danger">
+                      {{ 'ADMIN.FORM_ACRONYM_REQ' | translate }}
+                    </span>
+                                        }
+                                        @if (deptC['acronymEn'].errors?.['minlength']) {
+                                            <span class="label label-danger">
+                      {{ 'ADMIN.FORM_2_CHAR_REQ' | translate }}
+                    </span>
+                                        }
+                                    </strong>
+                                }
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="acronymEn"
+                                           formControlName="acronymEn"
+                                           required="required"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="acronymFr" class="col-sm-6 control-label required">{{
+                                        'ADMIN.FORM_ACRONYM_FR' | translate
+                                    }}</label>
+                                @if (deptC['acronymFr'].touched && deptC['acronymFr'].invalid) {
+                                    <strong class="error">
+                                        @if (deptC['acronymFr'].errors?.['required']) {
+                                            <span class="label label-danger">
+                      {{ 'ADMIN.FORM_ACRONYM_REQ' | translate }}
+                    </span>
+                                        }
+                                        @if (deptC['acronymFr'].errors?.['minlength']) {
+                                            <span class="label label-danger">
+                      {{ 'ADMIN.FORM_2_CHAR_REQ' | translate }}
+                    </span>
+                                        }
+                                    </strong>
+                                }
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="acronymFr"
+                                           formControlName="acronymFr"
+                                           required="required"/>
+                                </div>
+                            </div>
+
+                            <legend>{{ 'ADMIN.FORM_DEPT_SEARCH' | translate }}</legend>
+                            <div class="form-group">
+                                <label for="urlEn"
+                                       class="col-sm-6 control-label">{{ 'ADMIN.FORM_SEARCH_EN' | translate }}</label>
+                                @if (deptC['urlEn'].touched && deptC['urlEn'].invalid) {
+                                    <strong class="error">
+                  <span class="label label-danger">
+                    {{ 'ADMIN.FORM_URL_ERROR' | translate }}
+                  </span>
+                                    </strong>
+                                }
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="urlEn" formControlName="urlEn"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="urlFr"
+                                       class="col-sm-6 control-label">{{ 'ADMIN.FORM_SEARCH_FR' | translate }}</label>
+                                @if (deptC['urlFr'].touched && deptC['urlFr'].invalid) {
+                                    <strong class="error">
+                  <span class="label label-danger">
+                    {{ 'ADMIN.FORM_URL_ERROR' | translate }}
+                  </span>
+                                    </strong>
+                                }
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="urlFr" formControlName="urlFr"/>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="form-group">
+                            <div class="col-sm-offset-4 col-ms-8">
+                                <button [disabled]="deptForm.invalid" type="submit" class="btn btn-default">{{
+                                        'ADMIN.FORM_ADD' | translate
+                                    }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-          }
-          @if (isUserSubmitted && !isUserSuccess && !userErrorMessage) {
-            <div
-              class="alert alert-danger">
-              <p>{{ 'ADMIN.FORM_ERROR_MESSAGE' | translate }}</p>
-            </div>
-          } @else {
-            @if (userErrorMessage) {
-              <div class="alert alert-danger">
-                <p>{{ userErrorMessage }}</p>
-              </div>
-            }
-          }
+        </div>
+        <div class="col-sm-5">
 
-          <fieldset class="legend-brdr-bttm">
-            <legend>{{ 'ADMIN.FORM2_LEGEND' | translate }}</legend>
+            <h3 id="basic2">{{ 'ADMIN.FORM2_TITLE' | translate }}</h3>
+            <div class="panel panel-default small">
+                <div class="panel-body">
+                    <form [formGroup]="userForm" (ngSubmit)="submitUser()">
+                        @if (isUserSubmitted && isUserSuccess) {
+                            <div class="alert alert-success">
+                                <p>{{ user.firstName }} {{ user.lastName }} {{ 'ADMIN.FORM_SUCCESS_MESSAGE' | translate }}</p>
+                            </div>
+                        }
+                        @if (isUserSubmitted && !isUserSuccess && !userErrorMessage) {
+                            <div
+                                    class="alert alert-danger">
+                                <p>{{ 'ADMIN.FORM_ERROR_MESSAGE' | translate }}</p>
+                            </div>
+                        } @else {
+                            @if (userErrorMessage) {
+                                <div class="alert alert-danger">
+                                    <p>{{ userErrorMessage }}</p>
+                                </div>
+                            }
+                        }
 
-            <div class="form-group">
-              <label for="email" class="col-sm-6 control-label required">{{
-                'ADMIN.HEAD_EMAIL' | translate
-              }}</label>
-              @if (userC['email'].touched && userC['email'].invalid) {
-                <strong class="error">
-                  @if (userC['email'].errors?.['required']) {
-                    <span class="label label-danger">
+                        <fieldset class="legend-brdr-bttm">
+                            <legend>{{ 'ADMIN.FORM2_LEGEND' | translate }}</legend>
+
+                            <div class="form-group">
+                                <label for="email" class="col-sm-6 control-label required">{{
+                                        'ADMIN.HEAD_EMAIL' | translate
+                                    }}</label>
+                                @if (userC['email'].touched && userC['email'].invalid) {
+                                    <strong class="error">
+                                        @if (userC['email'].errors?.['required']) {
+                                            <span class="label label-danger">
                       {{ 'ADMIN.FORM_EMAIL_REQ' | translate }}
                     </span>
-                  }
-                  @if (userC['email'].errors?.['email']) {
-                    <span class="label label-danger">
+                                        }
+                                        @if (userC['email'].errors?.['email']) {
+                                            <span class="label label-danger">
                       {{ 'ADMIN.FORM_EMAIL_INVALID' | translate }}
                     </span>
-                  }
-                </strong>
-              }
-              <div class="col-sm-5">
-                <input type="email" class="form-control" id="email" formControlName="email"
-                  required="required"/>
-              </div>
-            </div>
+                                        }
+                                    </strong>
+                                }
+                                <div class="col-sm-5">
+                                    <input type="email" class="form-control" id="email" formControlName="email"
+                                           required="required"/>
+                                </div>
+                            </div>
 
-            <div class="form-group">
-              <label for="password" class="col-sm-6 control-label required">{{
-                'LOGIN.FORM_PASSWORD' | translate
-              }}</label>
-              @if (userC['password'].touched && userC['password'].invalid) {
-                <strong class="error">
-                  @if (userC['password'].errors?.['required']) {
-                    <span class="label label-danger">
+                            <div class="form-group">
+                                <label for="password" class="col-sm-6 control-label required">{{
+                                        'LOGIN.FORM_PASSWORD' | translate
+                                    }}</label>
+                                @if (userC['password'].touched && userC['password'].invalid) {
+                                    <strong class="error">
+                                        @if (userC['password'].errors?.['required']) {
+                                            <span class="label label-danger">
                       {{ 'ADMIN.FORM_PASS_REQ' | translate }}
                     </span>
-                  }
-                  @if (userC['password'].errors?.['minlength']) {
-                    <span class="label label-danger">
+                                        }
+                                        @if (userC['password'].errors?.['minlength']) {
+                                            <span class="label label-danger">
                       {{ 'ADMIN.FORM_8_CHAR_REQ' | translate }}
                     </span>
-                  }
-                </strong>
-              }
-              <div class="col-sm-5">
-                <input type="password" class="form-control" id="password" formControlName="password"
-                  required="required"/>
-              </div>
-            </div>
+                                        }
+                                    </strong>
+                                }
+                                <div class="col-sm-5">
+                                    <input type="password" class="form-control" id="password" formControlName="password"
+                                           required="required"/>
+                                </div>
+                            </div>
 
 
-            <div class="form-group">
-              <label for="firstName" class="col-sm-6 control-label required">{{
-                'ADMIN.HEAD_FIRST_NAME' | translate
-              }}</label>
-              @if (userC['firstName'].touched && userC['firstName'].invalid) {
-                <strong class="error">
-                  @if (userC['firstName'].errors?.['required']) {
-                    <span class="label label-danger">
+                            <div class="form-group">
+                                <label for="firstName" class="col-sm-6 control-label required">{{
+                                        'ADMIN.HEAD_FIRST_NAME' | translate
+                                    }}</label>
+                                @if (userC['firstName'].touched && userC['firstName'].invalid) {
+                                    <strong class="error">
+                                        @if (userC['firstName'].errors?.['required']) {
+                                            <span class="label label-danger">
                       {{ 'ADMIN.FORM_FIRST_NAME_REQ' | translate }}
                     </span>
-                  }
-                  @if (userC['firstName'].errors?.['minlength']) {
-                    <span class="label label-danger">
+                                        }
+                                        @if (userC['firstName'].errors?.['minlength']) {
+                                            <span class="label label-danger">
                       {{ 'ADMIN.FORM_2_CHAR_REQ' | translate }}
                     </span>
-                  }
-                </strong>
-              }
-              <div class="col-sm-5">
-                <input type="text" class="form-control" id="firstName" formControlName="firstName"
-                  required="required"/>
-              </div>
-            </div>
+                                        }
+                                    </strong>
+                                }
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="firstName" formControlName="firstName"
+                                           required="required"/>
+                                </div>
+                            </div>
 
 
-            <div class="form-group">
-              <label for="lastName" class="col-sm-6 control-label required">{{
-                'ADMIN.HEAD_LAST_NAME' | translate
-              }}</label>
-              @if (userC['lastName'].touched && userC['lastName'].invalid) {
-                <strong class="error">
-                  @if (userC['lastName'].errors?.['required']) {
-                    <span class="label label-danger">
+                            <div class="form-group">
+                                <label for="lastName" class="col-sm-6 control-label required">{{
+                                        'ADMIN.HEAD_LAST_NAME' | translate
+                                    }}</label>
+                                @if (userC['lastName'].touched && userC['lastName'].invalid) {
+                                    <strong class="error">
+                                        @if (userC['lastName'].errors?.['required']) {
+                                            <span class="label label-danger">
                       {{ 'ADMIN.FORM_LAST_NAME_REQ' | translate }}
                     </span>
-                  }
-                  @if (userC['lastName'].errors?.['minlength']) {
-                    <span class="label label-danger">
+                                        }
+                                        @if (userC['lastName'].errors?.['minlength']) {
+                                            <span class="label label-danger">
                       {{ 'ADMIN.FORM_2_CHAR_REQ' | translate }}
                     </span>
-                  }
-                </strong>
-              }
-              <div class="col-sm-5">
-                <input type="text" class="form-control" id="lastName" formControlName="lastName"
-                  required="required"/>
-              </div>
-            </div>
+                                        }
+                                    </strong>
+                                }
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="lastName" formControlName="lastName"
+                                           required="required"/>
+                                </div>
+                            </div>
 
-            <div class="form-group">
-              <label for="department" class="col-sm-6 control-label required">{{
-                'GENERAL.DEPARTMENT_AGENCY' | translate
-              }}</label>
-              @if (userC['departmentId'].touched && userC['departmentId'].invalid) {
-                <strong
-                  class="error">
+                            <div class="form-group">
+                                <label for="department" class="col-sm-6 control-label required">{{
+                                        'GENERAL.DEPARTMENT_AGENCY' | translate
+                                    }}</label>
+                                @if (userC['departmentId'].touched && userC['departmentId'].invalid) {
+                                    <strong
+                                            class="error">
                   <span class="label label-danger">
                     {{ 'ADMIN.FORM_DEPT_REQ' | translate }}
                   </span>
-                </strong>
-              }
-              <div class="col-sm-5">
-                <select id="department"
-                  class="form-control"
-                  formControlName="departmentId">
-                  <option value="" disabled>{{ 'ADMIN.FORM_CHOOSE_DEPT' | translate }}</option>
-                  @for (dept of departments; track dept) {
-                    <option
-                      [value]="dept.id">
-                      {{ dept.acronymEn }}/{{ dept.acronymFr }}
-                    </option>
-                  }
-                </select>
-              </div>
+                                    </strong>
+                                }
+                                <div class="col-sm-5">
+                                    <select id="department"
+                                            class="form-control"
+                                            formControlName="departmentId">
+                                        <option value="" disabled>{{ 'ADMIN.FORM_CHOOSE_DEPT' | translate }}</option>
+                                        @for (dept of departments; track dept) {
+                                            <option
+                                                    [value]="dept.id">
+                                                {{ dept.acronymEn }}/{{ dept.acronymFr }}
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="isAdmin" class="col-sm-6 control-label">{{
+                                        'ADMIN.HEAD_ADMIN' | translate
+                                    }}</label>
+                                <div class="col-sm-5">
+                                    <input type="checkbox" class="form-control" id="isAdmin" formControlName="isAdmin"/>
+                                </div>
+                            </div>
+
+
+                        </fieldset>
+                        <div class="form-group">
+                            <div class="col-sm-offset-4 col-ms-8">
+                                <button [disabled]="userForm.invalid" type="submit" class="btn btn-default">{{
+                                        'ADMIN.FORM_ADD' | translate
+                                    }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
+        </div>
 
-
-            <div class="form-group">
-              <label for="isAdmin" class="col-sm-6 control-label">{{
-                'ADMIN.HEAD_ADMIN' | translate
-              }}</label>
-              <div class="col-sm-5">
-                <input type="checkbox" class="form-control" id="isAdmin" formControlName="isAdmin"/>
-              </div>
-            </div>
-
-
-          </fieldset>
-          <div class="form-group">
-            <div class="col-sm-offset-4 col-ms-8">
-              <button [disabled]="userForm.invalid" type="submit" class="btn btn-default">{{
-                'ADMIN.FORM_ADD' | translate
-                }}
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
     </div>
-  </div>
-
-</div>
-<br>
+    <br>
 
 </main>

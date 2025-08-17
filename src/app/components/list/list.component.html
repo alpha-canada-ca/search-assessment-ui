@@ -1,0 +1,236 @@
+<main property="mainContentOfPage" class="container" resource="#wb-main" typeof="WebPageElement">
+    <h1 property="name">{{ 'USER.TITLE' | translate }}</h1>
+
+    <div class="row">
+
+        <div class="col-md-12">
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h5 class="mrgn-tp-0">{{ 'USER.NEW_LIST_TITLE' | translate }}</h5>
+
+                    @if (createErrorMessage) {
+                        <div
+                                class="alert alert-danger small">
+                            <p>{{ createErrorMessage }}</p>
+                        </div>
+                    }
+
+                    <div class="row mrgn-lft-sm">
+                        <div class="col-sm-2">
+                            @if (listForm.get('name')?.touched && listForm.get('name')?.invalid) {
+                                <div class="row">
+                                    <strong class="error small">
+                                                    <span class="label label-danger">
+                                                        {{ 'USER.LIST_NAME_REQ' | translate }}</span>
+                                    </strong>
+                                </div>
+                            }</div>
+                        <div class="col-sm-2">
+                            @if (listForm.get('languageId')?.touched && listForm.get('languageId')?.invalid) {
+                                <div>
+                                    <strong class="error small">
+                                                    <span class="label label-danger">
+                                                        {{ 'USER.LIST_LANG_REQ' | translate }}</span>
+                                    </strong>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Create New List Form -->
+                    <form [formGroup]="listForm" (ngSubmit)="createList()" class="form-inline">
+                        <div class="form-group">
+                            <label class="wb-inv" for="new-list-name">{{
+                                    'USER.LIST_NAME' | translate
+                                }}</label>
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    id="new-list-name"
+                                    placeholder="{{
+                                    'USER.LIST_NAME' | translate
+                                }}"
+                                    formControlName="name"
+                                    required="required"
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label class="wb-inv"
+                                   for="language-selection">{{ 'USER.SELECT_LANG' | translate }}</label>
+
+                            <select
+                                    id="language-selection"
+                                    class="form-control"
+                                    formControlName="languageId">
+                                <option value="" disabled>{{ 'USER.SELECT_LANG' | translate }}</option>
+                                <option value="{{eng?.id}}">{{
+                                        'GENERAL.ENGLISH' | translate
+                                    }}
+                                </option>
+                                <option value="{{fra?.id}}">{{
+                                        'GENERAL.FRENCH' | translate
+                                    }}
+                                </option>
+                            </select>
+                        </div>
+                        <button
+                                class="btn btn-default"
+                                type="submit"
+                                [disabled]="listForm.invalid || savingList"
+                        >
+                            @if (savingList) {
+                                {{ 'USER.SAVING' | translate }}
+                            } @else {
+                                {{ 'USER.BUTTON_CREATE' | translate }}
+                            }
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+
+            <div class="row">
+
+                <div class="col-md-12">
+
+                    <h5 class="mrgn-tp-0">{{ 'USER.EXISTING_LIST_TITLE' | translate }}</h5>
+
+                    <!-- Select Existing List -->
+                    <label class="col-sm-2 control-label small">{{
+                            'USER.LIST_NAME' | translate
+                        }}</label>
+                    <select
+                            class="col-sm-5 form-control"
+                            #listSelect
+                            (change)="onListSelect(listSelect.value)"
+                            [value]="selectedListId || ''"
+                    >
+                        <option value="" disabled>{{ 'USER.SELECT_LIST' | translate }}</option>
+                        <option *ngFor="let l of lists" [value]="l.id">
+                            {{ l.name }} ({{ getLanguageLabel(l.language.id) }})
+                        </option>
+                    </select>
+                    <button
+                            *ngIf="selectedListId"
+                            class="btn btn-danger btn-sm"
+                            (click)="deleteList()"
+                    >
+                        {{ 'USER.BUTTON_DELETE_LIST' | translate }}
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-12">
+
+                    <div *ngIf="selectedListId">
+                        <hr/>
+
+                        <!-- Dynamic Terms Form -->
+                        <form [formGroup]="termsForm" (ngSubmit)="saveTerms()">
+                            <div formArrayName="terms">
+                                <div *ngFor="let termCtrl of terms.controls; let i = index" [formGroupName]="i">
+                                    <div class="row">
+
+                                        <input type="hidden" formControlName="id"/>
+                                        <div class="col-sm-3">
+
+                                            <!-- term text -->
+                                            <input formControlName="term" placeholder="Search term"
+                                                   class="form-control"/>
+                                        </div>
+
+                                        <!-- targetUrls -->
+
+                                        <div formArrayName="targetUrls" class="col-sm-6">
+                                            <div *ngFor="let urlGroup of getTermUrls(i).controls; let j = index"
+                                                 [formGroupName]="j"
+                                                 class="d-flex align-items-center">
+
+                                                <!-- hidden id, if you need it -->
+                                                <input type="hidden" formControlName="id"/>
+
+                                                <!-- URL input -->
+                                                <input formControlName="url"
+                                                       type="url"
+                                                       placeholder="Expected URL"
+                                                       class="form-control"/>
+
+                                                <button
+                                                        type="button"
+                                                        class="btn btn-warning btn-sm"
+                                                        (click)="removeUrl(i,j)"
+                                                        [disabled]="getTermUrls(i).length === 1"
+                                                >
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                </button>
+                                            </div>
+
+
+                                            <button type="button"
+                                                    class="btn btn-default btn-sm"
+                                                    (click)="addUrl(i)">
+                                                <span class="glyphicon glyphicon-plus"></span> {{ 'USER.BUTTON_ADD_URL' | translate }}
+                                            </button>
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <!-- remove the entire term, if needed -->
+                                            <button type="button" class="btn btn-warning"
+                                                    (click)="removeTerm(i)">
+                                                {{ 'USER.BUTTON_DELETE_TERM' | translate }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                </div>
+                            </div>
+
+                            <button
+                                    type="button"
+                                    class="btn btn-default mrgn-bttm-md"
+                                    (click)="addTerm()"
+                            >
+                                <span class="glyphicon glyphicon-plus"></span> {{ 'USER.BUTTON_ADD_TERM' | translate }}
+                            </button>
+
+                            @if (listErrorMessage) {
+                                <div
+                                        class="alert alert-danger">
+                                    <p>{{ listErrorMessage }}</p>
+                                </div>
+                            }
+
+                            <div class="mt-3">
+                                <button
+                                        class="btn btn-success"
+                                        type="submit"
+                                        [disabled]="termsForm.invalid || savingTerms"
+                                >
+                                    @if (savingTerms) {
+                                        {{ 'USER.SAVING' | translate }}
+                                    } @else {
+                                        <span class="glyphicon glyphicon-floppy-disk"></span> {{ 'USER.BUTTON_SAVE' | translate }}
+                                    }
+                                </button>
+                                <button
+                                        class="btn btn-default"
+                                        type="button"
+                                        (click)="clearTerms()"
+                                >
+                                    {{ 'USER.BUTTON_RESET' | translate }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
